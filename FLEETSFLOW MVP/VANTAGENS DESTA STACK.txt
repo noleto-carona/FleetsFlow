@@ -1,0 +1,13 @@
+ VANTAGENS DESTA STACK
+🚀 Velocidade de desenvolvimento - JavaScript/TypeScript em todo stack
+
+🧩 Código compartilhado - Types/interfaces entre frontend/backend
+
+📈 Escalabilidade - NestJS modular, Prisma performático
+
+🔄 Hot Reload - Vite + NestJS watch mode = desenvolvimento ágil
+
+🌐 Full-stack TypeScript - Menor curva de aprendizado
+
+📱 Mobile ready - Mesmo conhecimento para React Native
+

@@ -1,0 +1,23 @@
+[Empresa]
+│
+├── [Perfil]
+│   ├── [Armador_Offshore]
+│   ├── [Armador_Cabotagem]
+│   ├── [Terminal_Portuario]
+│   ├── [Praticagem]
+│   ├── [Armador_Fluvial]
+│   ├── [Maritimo_Cruzeiros]
+│   ├── [Reboque_Lancha]
+│   ├── [Agente_Maritimo]
+│   ├── [Contratante]
+│   ├── [Agente_Governamental]
+│   ├── [Certificador]
+│   └── [Seguradora]
+│
+├── [Embarcacao] (para perfis com frota)
+│   ├── [Certificado_Embarcacao]
+│   └── [Tripulante]
+│
+├── [Documento] (uploads genéricos)
+│
+└── [Integracao_Sistema] (conexões externas)

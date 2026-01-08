@@ -1,0 +1,47 @@
+1. Autenticação JWT
+// backend/src/modules/auth/jwt.strategy.ts
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor() {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: process.env.JWT_SECRET,
+    });
+  }
+
+  async validate(payload: any) {
+    return { userId: payload.sub, email: payload.email };
+  }
+}
+
+2.Upload de Arquivos com Bull Queue
+typescript
+// backend/src/modules/documentos/documentos.service.ts
+@Injectable()
+export class DocumentosService {
+  constructor(
+    @InjectQueue('document-queue') private documentQueue: Queue
+  ) {}
+
+  async processarUpload(file: Express.Multer.File, empresaId: number) {
+    // Adiciona à fila para processamento assíncrono
+    await this.documentQueue.add('process-document', {
+      file,
+      empresaId
+    });
+  }
+}
+
+3. Validação com Zod (Frontend)
+typescript
+// frontend/src/lib/validators.ts
+import { z } from 'zod';
+
+export const empresaSchema = z.object({
+  razaoSocial: z.string().min(3),
+  cnpj: z.string().regex(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/),
+  email: z.string().email(),
+  aceiteLgpd: z.literal(true)
+});
+
+export type EmpresaFormData = z.infer<typeof empresaSchema>;

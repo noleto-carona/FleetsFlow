@@ -1,0 +1,363 @@
+-- ============================================
+-- BANCO DE DADOS FLEETS FLOW - ESTRUTURA COMPLETA
+-- ============================================
+
+CREATE DATABASE FleetsFlow;
+USE FleetsFlow;
+
+-- ======================
+-- TABELAS BASE
+-- ======================
+
+CREATE TABLE Empresa (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    razao_social VARCHAR(200) NOT NULL,
+    cnpj VARCHAR(20) UNIQUE NOT NULL,
+    nome_fantasia VARCHAR(150),
+    logradouro VARCHAR(200),
+    numero VARCHAR(20),
+    bairro VARCHAR(100),
+    cidade VARCHAR(100),
+    estado CHAR(2),
+    cep VARCHAR(10),
+    telefone VARCHAR(20),
+    email VARCHAR(150),
+    responsavel_nome VARCHAR(150),
+    responsavel_cpf VARCHAR(14),
+    responsavel_cargo VARCHAR(100),
+    certificado_digital_path VARCHAR(500),
+    aceite_lgpd BOOLEAN DEFAULT FALSE,
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Perfil (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    empresa_id INT NOT NULL,
+    tipo_perfil ENUM(
+        'ARMADOR_OFFSHORE',
+        'ARMADOR_CABOTAGEM',
+        'TERMINAL_PORTUARIO',
+        'PRATICAGEM',
+        'ARMADOR_FLUVIAL',
+        'MARITIMO_CRUZEIROS',
+        'REBOQUE_LANCHA',
+        'AGENTE_MARITIMO',
+        'CONTRATANTE',
+        'AGENTE_GOVERNAMENTAL',
+        'CERTIFICADOR',
+        'SEGURADORA'
+    ) NOT NULL,
+    capital_social DECIMAL(15,2),
+    num_funcionarios INT,
+    ativo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (empresa_id) REFERENCES Empresa(id) ON DELETE CASCADE
+);
+
+-- ======================
+-- TABELAS ESPECÍFICAS POR PERFIL
+-- ======================
+
+-- 1. ARMADOR OFFSHORE
+CREATE TABLE Armador_Offshore (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT UNIQUE NOT NULL,
+    num_embarcacoes INT DEFAULT 0,
+    certificado_ebn_path VARCHAR(500),
+    autorizacao_antaq_path VARCHAR(500),
+    licenca_ibama_path VARCHAR(500),
+    seguro_pi_path VARCHAR(500),
+    seguro_hm_path VARCHAR(500),
+    historico_conformidade_path VARCHAR(500),
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE
+);
+
+-- 2. TERMINAL PORTUÁRIO
+CREATE TABLE Terminal_Portuario (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT UNIQUE NOT NULL,
+    num_bercos INT,
+    tipos_carga SET('GRANEL_SOLIDO', 'GRANEL_LIQUIDO', 'CONTEINERES', 'PASSAGEIROS', 'SUPRIMENTOS_OFFSHORE'),
+    licenca_antaq_path VARCHAR(500),
+    licenca_ibama_path VARCHAR(500),
+    certificado_seguranca_path VARCHAR(500),
+    calendario_bercos_path VARCHAR(500),
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE
+);
+
+-- 3. PRATICAGEM
+CREATE TABLE Praticagem (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT UNIQUE NOT NULL,
+    num_praticos INT,
+    zonas_atendidas SET('SANTOS', 'PARANAGUA', 'RIO_JANEIRO', 'SAO_LUIS', 'MANAUS', 'OUTROS'),
+    certificado_praticagem_path VARCHAR(500),
+    licenca_antaq_path VARCHAR(500),
+    seguro_pi_path VARCHAR(500),
+    historico_manobras_path VARCHAR(500),
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE
+);
+
+-- 4. AGENTE MARÍTIMO/FLUVIAL
+CREATE TABLE Agente_Maritimo (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT UNIQUE NOT NULL,
+    num_clientes INT,
+    zonas_atuacao SET('MARITIMA', 'FLUVIAL', 'PORTUARIA'),
+    registro_antaq_path VARCHAR(500),
+    seguro_profissional_path VARCHAR(500),
+    historico_operacoes_path VARCHAR(500),
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE
+);
+
+-- 5. CONTRATANTE
+CREATE TABLE Contratante (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT UNIQUE NOT NULL,
+    segmento ENUM('OFFSHORE', 'CABOTAGEM', 'FLUVIAL', 'CRUZEIROS', 'APOIO_PORTUARIO'),
+    volume_fretes_anual DECIMAL(15,2),
+    capital_minimo_exigido DECIMAL(15,2),
+    frota_minima_exigida INT,
+    certificado_ebn_path VARCHAR(500),
+    licenca_ibama_path VARCHAR(500),
+    historico_conformidade_path VARCHAR(500),
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE
+);
+
+-- 6. AGENTE GOVERNAMENTAL
+CREATE TABLE Agente_Governamental (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT UNIQUE NOT NULL,
+    orgao ENUM('ANTAQ', 'MARINHA', 'IBAMA', 'ANVISA', 'ANP'),
+    siape VARCHAR(50),
+    cargo VARCHAR(100),
+    zona_atuacao VARCHAR(200),
+    certificado_servidor_path VARCHAR(500),
+    historico_aprovacoes_path VARCHAR(500),
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE
+);
+
+-- 7. CERTIFICADOR
+CREATE TABLE Certificador (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT UNIQUE NOT NULL,
+    num_certificados_anual INT,
+    tipos_certificacoes SET('ISM', 'ISPS', 'MLC', 'SOLAS', 'IOPP', 'CLASSE'),
+    reconhecimento_marinha_path VARCHAR(500),
+    historico_conformidade_path VARCHAR(500),
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE
+);
+
+-- 8. SEGURADORA
+CREATE TABLE Seguradora (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT UNIQUE NOT NULL,
+    tipos_seguros SET('P&I', 'H&M', 'DPEM', 'PROFISSIONAL'),
+    num_clientes INT,
+    registro_susep_path VARCHAR(500),
+    historico_sinistros_path VARCHAR(500),
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE
+);
+
+-- ======================
+-- EMBARCAÇÕES (para perfis com frota)
+-- ======================
+
+CREATE TABLE Embarcacao (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT NOT NULL,
+    tipo_embarcacao VARCHAR(50) NOT NULL,
+    imo_number VARCHAR(20) UNIQUE,
+    nome VARCHAR(150) NOT NULL,
+    bandeira ENUM('BRASILEIRA', 'ESTRANGEIRA') DEFAULT 'BRASILEIRA',
+    ano_construcao YEAR,
+    capacidade_carga DECIMAL(10,2), -- ton DWT ou TEU
+    potencia_total DECIMAL(10,2), -- HP
+    posicionamento_dinamico ENUM('DP1', 'DP2', 'DP3', 'NONE') DEFAULT 'NONE',
+    capacidade_guindaste DECIMAL(10,2),
+    num_tripulantes INT,
+    ativa BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE,
+    INDEX idx_perfil (perfil_id),
+    INDEX idx_imo (imo_number)
+);
+
+-- Certificados por embarcação
+CREATE TABLE Certificado_Embarcacao (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    embarcacao_id INT NOT NULL,
+    tipo_certificado ENUM(
+        'CRA',
+        'ARQUEACAO',
+        'CLASSE',
+        'CSN',
+        'LAO_IBAMA',
+        'ISM',
+        'ISPS',
+        'MLC',
+        'PEI',
+        'SEGURO_PI',
+        'SEGURO_HM',
+        'CONTROLE_LASTRO',
+        'IOPP',
+        'SOLAS',
+        'SEG_EQUIPAMENTO',
+        'SEG_RADIO',
+        'FRANCOBORDO',
+        'LICENCA_SANITARIA',
+        'OUTROS'
+    ) NOT NULL,
+    caminho_arquivo VARCHAR(500) NOT NULL,
+    data_emissao DATE,
+    data_validade DATE,
+    valido BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (embarcacao_id) REFERENCES Embarcacao(id) ON DELETE CASCADE,
+    INDEX idx_embarcacao (embarcacao_id),
+    INDEX idx_validade (data_validade)
+);
+
+-- Tripulação
+CREATE TABLE Tripulante (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    embarcacao_id INT NOT NULL,
+    nome VARCHAR(150) NOT NULL,
+    cpf VARCHAR(14),
+    funcao VARCHAR(100),
+    certificado_stcw_path VARCHAR(500),
+    certificado_medico_path VARCHAR(500),
+    caderneta_marinha_path VARCHAR(500),
+    passaporte_path VARCHAR(500),
+    vacinas_path VARCHAR(500),
+    ativo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (embarcacao_id) REFERENCES Embarcacao(id) ON DELETE CASCADE,
+    INDEX idx_embarcacao (embarcacao_id)
+);
+
+-- ======================
+-- DOCUMENTOS GENÉRICOS
+-- ======================
+
+CREATE TABLE Documento (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT NOT NULL,
+    tipo_documento ENUM(
+        'BALANCO_PATRIMONIAL',
+        'CERTIDAO_NEGATIVA_RFB',
+        'CERTIDAO_NEGATIVA_FGTS',
+        'CERTIDAO_NEGATIVA_INSS',
+        'HISTORICO_CONFORMIDADE',
+        'OUTROS'
+    ) NOT NULL,
+    caminho_arquivo VARCHAR(500) NOT NULL,
+    descricao TEXT,
+    data_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE,
+    INDEX idx_perfil (perfil_id),
+    INDEX idx_tipo (tipo_documento)
+);
+
+-- ======================
+-- INTEGRAÇÕES EXTERNAS
+-- ======================
+
+CREATE TABLE Integracao_Sistema (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    perfil_id INT NOT NULL,
+    sistema ENUM('SAP_ARIBA', 'TOTVS', 'RM', 'SEI', 'SAMA', 'SISNAV', 'OUTROS') NOT NULL,
+    endpoint_url VARCHAR(500),
+    api_key VARCHAR(500),
+    webhook_url VARCHAR(500),
+    ativo BOOLEAN DEFAULT FALSE,
+    data_conexao TIMESTAMP,
+    FOREIGN KEY (perfil_id) REFERENCES Perfil(id) ON DELETE CASCADE,
+    INDEX idx_perfil (perfil_id)
+);
+
+-- ======================
+-- VIEWS ÚTEIS
+-- ======================
+
+CREATE VIEW VW_Perfis_Completos AS
+SELECT 
+    e.id as empresa_id,
+    e.razao_social,
+    e.cnpj,
+    p.id as perfil_id,
+    p.tipo_perfil,
+    p.capital_social,
+    p.num_funcionarios,
+    CASE p.tipo_perfil
+        WHEN 'ARMADOR_OFFSHORE' THEN ao.num_embarcacoes
+        WHEN 'ARMADOR_CABOTAGEM' THEN NULL
+        WHEN 'ARMADOR_FLUVIAL' THEN NULL
+        WHEN 'MARITIMO_CRUZEIROS' THEN NULL
+        WHEN 'REBOQUE_LANCHA' THEN NULL
+        ELSE NULL
+    END as num_embarcacoes,
+    p.data_cadastro
+FROM Empresa e
+JOIN Perfil p ON e.id = p.empresa_id
+LEFT JOIN Armador_Offshore ao ON p.id = ao.perfil_id
+WHERE p.ativo = TRUE;
+
+CREATE VIEW VW_Embarcacoes_Com_Certificados AS
+SELECT 
+    e.id as embarcacao_id,
+    e.nome,
+    e.imo_number,
+    e.tipo_embarcacao,
+    p.tipo_perfil,
+    emp.razao_social,
+    COUNT(c.id) as num_certificados,
+    SUM(CASE WHEN c.valido = TRUE THEN 1 ELSE 0 END) as certificados_validos
+FROM Embarcacao e
+JOIN Perfil p ON e.perfil_id = p.id
+JOIN Empresa emp ON p.empresa_id = emp.id
+LEFT JOIN Certificado_Embarcacao c ON e.id = c.embarcacao_id
+GROUP BY e.id, e.nome, e.imo_number;
+
+-- ======================
+-- ÍNDICES ADICIONAIS
+-- ======================
+
+CREATE INDEX idx_empresa_cnpj ON Empresa(cnpj);
+CREATE INDEX idx_perfil_tipo ON Perfil(tipo_perfil);
+CREATE INDEX idx_embarcacao_tipo ON Embarcacao(tipo_embarcacao);
+CREATE INDEX idx_certificado_tipo ON Certificado_Embarcacao(tipo_certificado);
+
+-- ======================
+-- PROCEDURES ÚTEIS
+-- ======================
+
+DELIMITER //
+
+CREATE PROCEDURE SP_Atualizar_Contagem_Embarcacoes(IN perfil_id_param INT)
+BEGIN
+    DECLARE contagem INT;
+    
+    SELECT COUNT(*) INTO contagem 
+    FROM Embarcacao 
+    WHERE perfil_id = perfil_id_param AND ativa = TRUE;
+    
+    UPDATE Armador_Offshore 
+    SET num_embarcacoes = contagem 
+    WHERE perfil_id = perfil_id_param;
+END //
+
+CREATE PROCEDURE SP_Verificar_Certificados_Vencidos()
+BEGIN
+    SELECT 
+        e.nome as embarcacao,
+        e.imo_number,
+        c.tipo_certificado,
+        c.data_validade,
+        DATEDIFF(c.data_validade, CURDATE()) as dias_para_vencer
+    FROM Certificado_Embarcacao c
+    JOIN Embarcacao e ON c.embarcacao_id = e.id
+    WHERE c.valido = TRUE 
+    AND c.data_validade IS NOT NULL 
+    AND c.data_validade < DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+    ORDER BY c.data_validade ASC;
+END //
+
+DELIMITER ;

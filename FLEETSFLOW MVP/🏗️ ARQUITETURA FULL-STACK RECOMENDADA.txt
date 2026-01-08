@@ -1,0 +1,37 @@
+BACKEND - NestJS
+typescript
+Tecnologias Principais:
+├── NestJS 10+ (Framework Node.js com TypeScript)
+├── TypeScript 5.x
+├── Prisma ORM (ou TypeORM)
+├── PostgreSQL 15+ (banco principal)
+├── Redis (cache/sessões)
+├── Bull (filas - processamento de uploads)
+├── JWT (autenticação)
+├── Swagger/OpenAPI (documentação)
+├── Jest (testes)
+└── Docker (containerização)
+
+FRONTEND - React Modern Stack
+typescript
+Tecnologias Principais:
+├── React 18+ com TypeScript
+├── Vite (build tool - muito mais rápido que Webpack)
+├── TanStack Query (React Query) - gerenciamento de dados
+├── Zustand (state management - mais simples que Redux)
+├── React Hook Form + Zod (formulários e validação)
+├── Tailwind CSS + ShadCN/UI (estilização e componentes)
+├── React Router DOM 6+ (navegação)
+├── Axios (chamadas HTTP)
+├── Recharts (gráficos)
+└── React PDF (geração/visualização de PDFs)
+
+
+MOBILE
+typescript
+React Native com:
+├── Expo (para desenvolvimento mais rápido)
+├── TypeScript
+├── React Navigation
+├── React Native Paper (UI components)
+└── Axios para APIs

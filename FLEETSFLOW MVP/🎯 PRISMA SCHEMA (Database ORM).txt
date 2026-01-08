@@ -1,0 +1,91 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Empresa {
+  id                Int      @id @default(autoincrement())
+  razaoSocial       String   @map("razao_social")
+  cnpj              String   @unique
+  nomeFantasia      String?  @map("nome_fantasia")
+  email             String   @unique
+  telefone          String?
+  cep               String?
+  logradouro        String?
+  numero            String?
+  bairro            String?
+  cidade            String?
+  estado            String?
+  responsavelNome   String   @map("responsavel_nome")
+  responsavelCpf    String   @map("responsavel_cpf")
+  responsavelCargo  String   @map("responsavel_cargo")
+  aceiteLgpd        Boolean  @map("aceite_lgpd") @default(false)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  
+  perfis Perfil[]
+  
+  @@map("empresas")
+}
+
+model Perfil {
+  id          Int       @id @default(autoincrement())
+  tipo        PerfilTipo
+  empresaId   Int       @map("empresa_id")
+  ativo       Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  
+  empresa     Empresa   @relation(fields: [empresaId], references: [id])
+  embarcacoes Embarcacao[]
+  
+  @@map("perfis")
+  @@index([empresaId])
+}
+
+enum PerfilTipo {
+  ARMADOR_OFFSHORE
+  TERMINAL_PORTUARIO
+  PRATICAGEM
+  ARMADOR_FLUVIAL
+  MARITIMO_CRUZEIROS
+  REBOQUE_LANCHA
+  AGENTE_MARITIMO
+  CONTRATANTE
+  AGENTE_GOVERNAMENTAL
+  CERTIFICADOR
+  SEGURADORA
+}
+
+model Embarcacao {
+  id                  Int       @id @default(autoincrement())
+  imoNumber           String?   @unique @map("imo_number")
+  nome                String
+  tipo                String
+  bandeira            String    @default("BRASILEIRA")
+  perfilId            Int       @map("perfil_id")
+  
+  perfil              Perfil    @relation(fields: [perfilId], references: [id])
+  certificados        Certificado[]
+  
+  @@map("embarcacoes")
+  @@index([perfilId])
+}
+
+model Certificado {
+  id            Int       @id @default(autoincrement())
+  tipo          String
+  embarcacaoId  Int       @map("embarcacao_id")
+  arquivoUrl    String    @map("arquivo_url")
+  dataValidade  DateTime? @map("data_validade")
+  
+  embarcacao    Embarcacao @relation(fields: [embarcacaoId], references: [id])
+  
+  @@map("certificados")
+  @@index([embarcacaoId])
+  @@index([dataValidade])
+}
