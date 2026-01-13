@@ -1,0 +1,298 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Empresa {
+  id                Int      @id @default(autoincrement())
+  razaoSocial       String   @map("razao_social")
+  cnpj              String   @unique
+  nomeFantasia      String?  @map("nome_fantasia")
+  email             String   @unique
+  telefone          String?
+  cep               String?
+  logradouro        String?
+  numero            String?
+  bairro            String?
+  cidade            String?
+  estado            String?
+  responsavelNome   String   @map("responsavel_nome")
+  responsavelCpf    String   @map("responsavel_cpf")
+  responsavelCargo  String   @map("responsavel_cargo")
+  aceiteLgpd        Boolean  @map("aceite_lgpd") @default(false)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  
+  perfis Perfil[]
+  documentos Documento[]
+  
+  @@map("empresas")
+}
+
+model Perfil {
+  id                Int       @id @default(autoincrement())
+  tipo              PerfilTipo
+  empresaId         Int       @map("empresa_id")
+  chaveOperacional  String?   @unique @map("chave_operacional")
+  dataValidadeChave DateTime? @map("data_validade_chave")
+  capitalSocial     Float?    @map("capital_social")
+  numFuncionarios   Int?      @map("num_funcionarios")
+  ativo             Boolean   @default(true)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  
+  empresa           Empresa   @relation(fields: [empresaId], references: [id])
+  embarcacoes       Embarcacao[]
+  complianceDocs    ComplianceDocumento[]
+  
+  // Relações do Marketplace e Reputação
+  demandasCriadas   DemandaSpot[] @relation("DemandasCriadas")
+  matchesComoPme    Match[]       @relation("MatchPme")
+  reputacao         Reputacao?
+
+  @@map("perfis")
+  @@index([empresaId])
+  @@index([chaveOperacional])
+}
+
+enum PerfilTipo {
+  ARMADOR_OFFSHORE
+  ARMADOR_CABOTAGEM
+  TERMINAL_PORTUARIO
+  PRATICAGEM
+  ARMADOR_FLUVIAL
+  MARITIMO_CRUZEIROS
+  REBOQUE_LANCHA
+  AGENTE_MARITIMO
+  CONTRATANTE
+  AGENTE_GOVERNAMENTAL
+  CERTIFICADOR
+  SEGURADORA
+}
+
+model Embarcacao {
+  id                  Int       @id @default(autoincrement())
+  imoNumber           String?   @unique @map("imo_number")
+  nome                String
+  tipo                String
+  bandeira            String    @default("BRASILEIRA")
+  perfilId            Int       @map("perfil_id")
+  anoConstrucao       Int?      @map("ano_construcao")
+  capacidadeCarga     Float?    @map("capacidade_carga")
+  potenciaTotal       Float?    @map("potencia_total")
+  posicionamentoDp    String?   @map("posicionamento_dp")
+  capacidadeGuindaste Float?    @map("capacidade_guindaste")
+  numTripulantes      Int?      @map("num_tripulantes")
+  ativa               Boolean   @default(true)
+  createdAt           DateTime  @default(now()) @map("created_at")
+  
+  perfil              Perfil    @relation(fields: [perfilId], references: [id])
+  certificados        Certificado[]
+  operacoes           Operacao[]
+  matches             Match[]
+  
+  @@map("embarcacoes")
+  @@index([perfilId])
+  @@index([imoNumber])
+}
+
+model Certificado {
+  id            Int       @id @default(autoincrement())
+  tipo          String
+  embarcacaoId  Int       @map("embarcacao_id")
+  arquivoUrl    String    @map("arquivo_url")
+  dataValidade  DateTime? @map("data_validade")
+  valido        Boolean   @default(true)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  embarcacao    Embarcacao @relation(fields: [embarcacaoId], references: [id])
+  
+  @@map("certificados")
+  @@index([embarcacaoId])
+  @@index([dataValidade])
+}
+
+model ComplianceDocumento {
+  id          Int       @id @default(autoincrement())
+  perfilId    Int       @map("perfil_id")
+  tipo        String
+  arquivoUrl  String    @map("arquivo_url")
+  status      DocStatus @default("PENDENTE")
+  dataValidade DateTime? @map("data_validade")
+  observacao  String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  validadoEm  DateTime? @map("validado_em")
+  
+  perfil      Perfil    @relation(fields: [perfilId], references: [id])
+  
+  @@map("compliance_documentos")
+  @@index([perfilId])
+  @@index([status])
+}
+
+enum DocStatus {
+  PENDENTE
+  VALIDADO
+  INVALIDO
+  EXPIRADO
+}
+
+model Documento {
+  id            Int       @id @default(autoincrement())
+  empresaId     Int       @map("empresa_id")
+  tipo          String
+  arquivoUrl    String    @map("arquivo_url")
+  descricao     String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  empresa       Empresa   @relation(fields: [empresaId], references: [id])
+  
+  @@map("documentos")
+  @@index([empresaId])
+}
+
+model DemandaSpot {
+  id              Int       @id @default(autoincrement())
+  contratanteId   Int       @map("contratante_id")
+  tipoServico     String    @map("tipo_servico")
+  localizacao     String?
+  latitude        Float?
+  longitude       Float?
+  dataInicio      DateTime  @map("data_inicio")
+  dataFim         DateTime  @map("data_fim")
+  requisitos      Json?
+  status          DemandaStatus @default("ABERTA")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  contratante     Perfil    @relation("DemandasCriadas", fields: [contratanteId], references: [id])
+  matches         Match[]
+  
+  @@map("demanda_spots")
+  @@index([contratanteId])
+  @@index([status])
+}
+
+enum DemandaStatus {
+  ABERTA
+  EM_NEGOCIACAO
+  FECHADA
+  CANCELADA
+}
+
+model Match {
+  id              Int       @id @default(autoincrement())
+  demandaId       Int       @map("demanda_id")
+  pmeId           Int       @map("pme_id")
+  embarcacaoId    Int       @map("embarcacao_id")
+  status          MatchStatus @default("PENDENTE")
+  precoProposto   Float?    @map("preco_proposto")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  demanda         DemandaSpot @relation(fields: [demandaId], references: [id])
+  pme             Perfil      @relation("MatchPme", fields: [pmeId], references: [id])
+  embarcacao      Embarcacao  @relation(fields: [embarcacaoId], references: [id])
+  contrato        Contrato?
+  
+  @@map("matches")
+  @@unique([demandaId, pmeId, embarcacaoId])
+  @@index([demandaId])
+  @@index([pmeId])
+}
+
+enum MatchStatus {
+  PENDENTE
+  ACEITO
+  RECUSADO
+  EXPIRADO
+}
+
+model Contrato {
+  id              String    @id @default(uuid())
+  matchId         Int       @unique @map("match_id")
+  hashChave       String    @map("hash_chave")
+  valor           Float
+  status          ContratoStatus @default("ASSINADO")
+  dataAssinatura  DateTime? @map("data_assinatura")
+  dataInicio      DateTime? @map("data_inicio")
+  dataFim         DateTime? @map("data_fim")
+  arquivoUrl      String?   @map("arquivo_url")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  match           Match     @relation(fields: [matchId], references: [id])
+  pagamento       Pagamento?
+  operacao        Operacao?
+  
+  @@map("contratos")
+  @@index([hashChave])
+}
+
+enum ContratoStatus {
+  RASCUNHO
+  ASSINADO
+  EM_EXECUCAO
+  CONCLUIDO
+  CANCELADO
+}
+
+model Operacao {
+  id              Int       @id @default(autoincrement())
+  contratoId      String    @unique @map("contrato_id")
+  embarcacaoId    Int       @map("embarcacao_id")
+  status          OperacaoStatus @default("AGENDADA")
+  dataInicioReal  DateTime? @map("data_inicio_real")
+  dataFimReal     DateTime? @map("data_fim_real")
+  logs            Json?
+  alertas         Json?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  contrato        Contrato  @relation(fields: [contratoId], references: [id])
+  embarcacao      Embarcacao @relation(fields: [embarcacaoId], references: [id])
+  
+  @@map("operacoes")
+}
+
+enum OperacaoStatus {
+  AGENDADA
+  EM_ANDAMENTO
+  CONCLUIDA
+  CANCELADA
+}
+
+model Pagamento {
+  id              Int       @id @default(autoincrement())
+  contratoId      String    @unique @map("contrato_id")
+  valorEscrow     Float     @map("valor_escrow")
+  status          PagamentoStatus @default("PENDENTE")
+  dataLiberacao   DateTime? @map("data_liberacao")
+  comprovanteUrl  String?   @map("comprovante_url")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  contrato        Contrato  @relation(fields: [contratoId], references: [id])
+  
+  @@map("pagamentos")
+}
+
+enum PagamentoStatus {
+  PENDENTE
+  RESERVADO
+  LIBERADO
+  CANCELADO
+}
+
+model Reputacao {
+  id              Int       @id @default(autoincrement())
+  perfilId        Int       @unique @map("perfil_id")
+  score           Float     @default(0.0)
+  operacoesConcluidas Int  @default(0) @map("operacoes_concluidas")
+  taxaSucesso     Float     @default(0.0) @map("taxa_sucesso")
+  emissoesCo2     Float?    @map("emissoes_co2") @default(0.0)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  perfil          Perfil    @relation(fields: [perfilId], references: [id])
+  
+  @@map("reputacao")
+}

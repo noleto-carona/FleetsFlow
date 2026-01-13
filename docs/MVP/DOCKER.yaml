@@ -24,10 +24,8 @@ services:
     environment:
       DATABASE_URL: postgresql://admin:secret@postgres:5432/fleetsflow
       REDIS_URL: redis://redis:6379
-      UPLOAD_PATH: /app/uploads
     volumes:
       - ./backend:/app
-      - ./backend/uploads:/app/uploads
       - /app/node_modules
     depends_on:
       - postgres
@@ -42,21 +40,6 @@ services:
       - /app/node_modules
     stdin_open: true
     tty: true
-
-  # ✅ NOVO: Serviço para OCR/Processamento (opcional)
-  ocr-worker:
-    build: ./backend
-    command: npm run queue:worker
-    environment:
-      DATABASE_URL: postgresql://admin:secret@postgres:5432/fleetsflow
-      REDIS_URL: redis://redis:6379
-    volumes:
-      - ./backend:/app
-      - ./backend/uploads:/app/uploads
-    depends_on:
-      - postgres
-      - redis
-      - backend
 
 volumes:
   postgres_data:

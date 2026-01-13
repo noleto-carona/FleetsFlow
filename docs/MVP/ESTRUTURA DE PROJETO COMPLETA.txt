@@ -1,0 +1,227 @@
+fleet-flow-backend/
+├── src/
+│   ├── modules/
+│   │   ├── auth/                   # Autenticação JWT
+│   │   │   ├── controllers/
+│   │   │   ├── services/
+│   │   │   ├── guards/
+│   │   │   ├── strategies/
+│   │   │   └── dto/
+│   │   │
+│   │   ├── empresas/               # Módulo Empresa
+│   │   ├── perfis/                 # Módulo Perfil
+│   │   │   ├── armador-offshore/
+│   │   │   ├── terminal-portuario/
+│   │   │   ├── praticagem/
+│   │   │   ├── armador-cabotagem/
+│   │   │   ├── armador-fluvial/
+│   │   │   ├── maritimo-cruzeiros/
+│   │   │   ├── reboque-lancha/
+│   │   │   ├── agente-maritimo/
+│   │   │   ├── contratante/
+│   │   │   ├── agente-governamental/
+│   │   │   ├── certificador/
+│   │   │   └── seguradora/
+│   │   │
+│   │   ├── embarcacoes/            # Módulo Embarcação
+│   │   ├── certificados/           # Módulo Certificados
+│   │   ├── documentos/             # Upload/download arquivos
+│   │   ├── integracao/             # APIs externas
+│   │   ├── dashboard/              # Métricas e relatórios
+│   │   │
+│   │   ├── compliance/             # ✅ NOVO: Validação antecipada + Chave Amarela
+│   │   │   ├── controllers/
+│   │   │   ├── services/
+│   │   │   ├── processors/         # OCR, validação IA
+│   │   │   ├── validators/         # Validações específicas
+│   │   │   ├── dto/
+│   │   │   └── entities/
+│   │   │
+│   │   ├── marketplace/            # ✅ NOVO: Uber dos Mares (Spot)
+│   │   │   ├── controllers/
+│   │   │   ├── services/
+│   │   │   ├── matching/           # Engine de matching
+│   │   │   ├── spot-demanda/      # Demanda spot
+│   │   │   ├── chat/              # Chat seguro
+│   │   │   ├── dto/
+│   │   │   └── entities/
+│   │   │
+│   │   ├── contratos/              # ✅ NOVO: Contratos + Assinatura ICP
+│   │   │   ├── controllers/
+│   │   │   ├── services/
+│   │   │   ├── templates/          # Templates de contrato
+│   │   │   ├── assinatura/         # ICP-Brasil integration
+│   │   │   ├── dto/
+│   │   │   └── entities/
+│   │   │
+│   │   ├── operacao/               # ✅ NOVO: Geofencing + Monitoramento
+│   │   │   ├── controllers/
+│   │   │   ├── services/
+│   │   │   ├── geofencing/         # Geofencing logic
+│   │   │   ├── monitoramento/      # AIS integration
+│   │   │   ├── alertas/            # Sistema de alertas
+│   │   │   ├── dto/
+│   │   │   └── entities/
+│   │   │
+│   │   ├── pagamento/              # ✅ NOVO: Escrow + Pagamentos
+│   │   │   ├── controllers/
+│   │   │   ├── services/
+│   │   │   ├── escrow/             # Escrow logic
+│   │   │   ├── liberacao/          # Liberação de pagamentos
+│   │   │   ├── dto/
+│   │   │   └── entities/
+│   │   │
+│   │   └── reputacao/              # ✅ NOVO: Score + ESG + Histórico
+│   │       ├── controllers/
+│   │       ├── services/
+│   │       ├── score/              # Cálculo de score
+│   │       ├── esg/                # Métricas ESG
+│   │       ├── dto/
+│   │       └── entities/
+│   │
+│   ├── common/
+│   │   ├── decorators/             # Decorators customizados
+│   │   ├── filters/                # Exception filters
+│   │   ├── interceptors/           # Interceptors
+│   │   ├── middleware/             # Middleware global
+│   │   ├── pipes/                  # Validation pipes
+│   │   ├── queue/                  # ✅ NOVO: Bull queue config
+│   │   └── crypto/                 # ✅ NOVO: Hash/Chaves criptográficas
+│   │
+│   ├── config/                     # Configurações
+│   ├── database/                   # Prisma/TypeORM config
+│   └── utils/                      # Funções utilitárias
+│       ├── ocr/                    # ✅ NOVO: Processamento OCR
+│       ├── pdf/                    # ✅ NOVO: Manipulação PDF
+│       ├── geolocalizacao/         # ✅ NOVO: Cálculos geográficos
+│       └── validators/             # ✅ NOVO: Validadores customizados
+│
+├── prisma/                         # Schema Prisma + migrations
+├── uploads/                        # Arquivos enviados
+│   ├── empresas/
+│   ├── embarcacoes/
+│   ├── tripulacao/
+│   └── contratos/
+├── templates/                      # ✅ NOVO: Templates de contrato
+├── tests/                          # Testes E2E
+├── Dockerfile
+├── docker-compose.yml
+├── package.json
+└── nest-cli.json
+
+fleet-flow-frontend/
+├── src/
+│   ├── api/                        # Configuração Axios e serviços
+│   │   ├── client.ts               # Instância Axios
+│   │   ├── auth.ts                 # Serviços autenticação
+│   │   ├── empresas.ts             # API empresas
+│   │   ├── embarcacoes.ts          # API embarcações
+│   │   ├── compliance.ts           # ✅ NOVO: API compliance
+│   │   ├── marketplace.ts          # ✅ NOVO: API marketplace spot
+│   │   ├── contratos.ts            # ✅ NOVO: API contratos
+│   │   ├── operacao.ts             # ✅ NOVO: API operação/geofencing
+│   │   └── pagamento.ts            # ✅ NOVO: API pagamentos
+│   │
+│   ├── components/                 # Componentes reutilizáveis
+│   │   ├── ui/                     # Componentes básicos
+│   │   ├── forms/                  # Componentes de formulário
+│   │   ├── layout/                 # Header, Sidebar, Footer
+│   │   ├── shared/                 # Compartilhados entre páginas
+│   │   ├── maps/                   # ✅ NOVO: Componentes de mapa
+│   │   └── documents/              # ✅ NOVO: Visualizador de documentos
+│   │
+│   ├── features/                   # Funcionalidades por domínio
+│   │   ├── auth/                   # Login, registro
+│   │   │   ├── components/
+│   │   │   ├── hooks/
+│   │   │   └── types.ts
+│   │   │
+│   │   ├── onboarding/             # ✅ NOVO: Onboarding guiado
+│   │   │   ├── components/
+│   │   │   ├── steps/
+│   │   │   └── hooks/
+│   │   │
+│   │   ├── compliance/             # ✅ NOVO: Módulo compliance
+│   │   │   ├── components/
+│   │   │   ├── upload/
+│   │   │   ├── status/
+│   │   │   └── hooks/
+│   │   │
+│   │   ├── empresas/               # Cadastro de empresas
+│   │   ├── perfis/                 # Gerenciamento de perfis
+│   │   ├── embarcacoes/            # Cadastro de embarcações
+│   │   ├── marketplace/            # ✅ NOVO: Marketplace spot
+│   │   │   ├── components/
+│   │   │   ├── demanda/
+│   │   │   ├── matching/
+│   │   │   └── chat/
+│   │   │
+│   │   ├── contratos/              # ✅ NOVO: Contratos + assinatura
+│   │   │   ├── components/
+│   │   │   ├── assinatura/
+│   │   │   ├── visualizacao/
+│   │   │   └── hooks/
+│   │   │
+│   │   ├── operacao/               # ✅ NOVO: Monitoramento operacional
+│   │   │   ├── components/
+│   │   │   ├── mapa/
+│   │   │   ├── alertas/
+│   │   │   └── hooks/
+│   │   │
+│   │   ├── pagamento/              # ✅ NOVO: Escrow + pagamentos
+│   │   │   ├── components/
+│   │   │   ├── escrow/
+│   │   │   ├── liberacao/
+│   │   │   └── hooks/
+│   │   │
+│   │   └── dashboard/              # Dashboard e relatórios
+│   │       ├── components/
+│   │       ├── metrics/
+│   │       └── hooks/
+│   │
+│   ├── hooks/                      # Custom hooks
+│   │   ├── useAuth.ts
+│   │   ├── useUpload.ts            # ✅ NOVO: Upload de arquivos
+│   │   ├── useGeolocation.ts       # ✅ NOVO: Geolocalização
+│   │   └── useWebSocket.ts         # ✅ NOVO: WebSocket para real-time
+│   │
+│   ├── lib/                        # Bibliotecas/configurações
+│   │   ├── utils.ts                # Funções utilitárias
+│   │   ├── validators.ts           # Esquemas Zod
+│   │   ├── constants.ts            # Constantes do sistema
+│   │   ├── crypto.ts               # ✅ NOVO: Utilitários criptográficos
+│   │   └── maps.ts                 # ✅ NOVO: Configuração de mapas
+│   │
+│   ├── pages/                      # Páginas/rotas
+│   │   ├── Login.tsx
+│   │   ├── Onboarding.tsx          # ✅ NOVO: Onboarding guiado
+│   │   ├── CadastroEmpresa.tsx
+│   │   ├── CadastroPerfil.tsx
+│   │   ├── Compliance.tsx          # ✅ NOVO: Painel compliance
+│   │   ├── Frota.tsx
+│   │   ├── Marketplace.tsx         # ✅ NOVO: Marketplace spot
+│   │   ├── Contratos.tsx           # ✅ NOVO: Gerenciamento de contratos
+│   │   ├── Operacao.tsx            # ✅ NOVO: Monitoramento operacional
+│   │   ├── Pagamentos.tsx          # ✅ NOVO: Painel de pagamentos
+│   │   ├── Dashboard.tsx
+│   │   └── Configuracoes.tsx
+│   │
+│   ├── router/                     # Configuração de rotas
+│   ├── store/                      # Zustand stores
+│   │   ├── auth.store.ts
+│   │   ├── ui.store.ts
+│   │   ├── empresas.store.ts
+│   │   ├── compliance.store.ts     # ✅ NOVO: Store compliance
+│   │   ├── marketplace.store.ts    # ✅ NOVO: Store marketplace
+│   │   └── operacao.store.ts       # ✅ NOVO: Store operação
+│   │
+│   ├── styles/                     # Estilos globais
+│   ├── types/                      # TypeScript types/interfaces
+│   └── main.tsx                    # Entry point
+│
+├── public/                         # Assets estáticos
+├── index.html
+├── package.json
+├── vite.config.ts
+├── tailwind.config.js
+└── tsconfig.json

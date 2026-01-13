@@ -1,0 +1,988 @@
+LEIA OS DOIS PROMPT SÓ ENTÃO EXECULTE O NOVO PROMPT - 2.
+CASO O PRIMEIRO PROMPT - 1 FOR RELEVANTE USE APENAS O QUE FOR PRECISO.
+SE NÃO SIGA COM O PROMPT - 2.
+
+PROMPT  - 1
+
+VOU CRIAR UM SISTEMA DE CADASTRO PARA O SETOR MARÍTIMO/PORTUÁRIO CHAMADO "FLEETS FLOW".
+
+**CONTEXTO:**
+Temos múltiplos perfis de usuários (Armador Offshore, Terminal Portuário, Praticagem, Seguradora, etc.) que precisam se cadastrar no sistema. Cada perfil tem campos gerais em comum e campos específicos.
+
+**OBJETIVO:**
+Criar o banco de dados relacional completo para suportar todos os perfis com seus relacionamentos.
+
+**REQUISITOS:**
+
+1. **TABELA BASE "Empresa":** Campos comuns a todos (Razão Social, CNPJ, Endereço, Responsável Legal, etc.)
+2. **TABELA "Perfil":** Cada empresa pode ter um ou mais perfis (ex: mesma empresa pode ser Armador e Contratante)
+3. **TABELAS ESPECÍFICAS:** Uma tabela para cada tipo de perfil com seus campos únicos
+4. **TABELA "Embarcacao":** Para perfis que possuem frota (Armadores)
+5. **TABELA "Certificado_Embarcacao":** Múltiplos certificados por embarcação
+6. **TABELA "Tripulante":** Tripulação por embarcação
+7. **TABELA "Documento":** Uploads genéricos (Balanço, Certidões Negativas)
+8. **TABELA "Integracao_Sistema":** Conexões com sistemas externos (SAP, Totvs, etc.)
+
+**REGAS DE NEGÓCIO:**
+- CNPJ único por Empresa
+- IMO Number único por Embarcação
+- Cada Perfil pertence a uma Empresa
+- Certificados têm data de validade
+- Suporte a múltiplos uploads de documentos
+- Histórico de datas de criação/atualização
+
+**PERFIS SUPORTADOS:**
+1. Armador Offshore
+2. Armador Portuário Cabotagem  
+3. Terminal Portuário
+4. Praticagem
+5. Armador Fluvial
+6. Marítimo / Cruzeiros
+7. Armador Portuário Reboque / Lancha
+8. Agente Marítimo / Fluvial
+9. Contratante
+10. Agente Governamental Fiscalizador
+11. Certificador Homologador
+12. Seguradora
+
+**ENTREGÁVEIS QUE PRECISO:**
+1. Script SQL completo com CREATE TABLE, FOREIGN KEYS, INDEXES
+2. Diagrama ER em texto (pode ser Mermaid)
+3. Views úteis para relatórios
+4. Stored Procedures para operações comuns
+5. Índices para performance
+
+**OBSERVAÇÕES TÉCNICAS:**
+- Usar MySQL/PostgreSQL
+- Incluir timestamps para auditoria
+- Usar ENUM para campos fixos
+- Considerar performance em grandes frotas (milhares de embarcações)
+- Incluir validações de data onde aplicável
+
+Por favor, gere o código SQL completo seguindo estas especificações.
+
+#######################################################################################################################
+
+NOVO PROMPT - 2
+
+# ========================
+# 1. CRIAR ESTRUTURA DE PASTAS
+# ========================
+
+mkdir fleets-flow
+cd fleets-flow
+
+# Backend estrutura
+mkdir -p backend/src/modules/{auth,empresas,perfis,embarcacoes,certificados,documentos,integracao,dashboard,compliance,marketplace,contratos,operacao,pagamento,reputacao}
+mkdir -p backend/src/modules/auth/{controllers,services,guards,strategies,dto}
+mkdir -p backend/src/modules/perfis/{armador-offshore,terminal-portuario,praticagem,armador-cabotagem,armador-fluvial,maritimo-cruzeiros,reboque-lancha,agente-maritimo,contratante,agente-governamental,certificador,seguradora}
+mkdir -p backend/src/modules/compliance/{controllers,services,processors,validators,dto,entities}
+mkdir -p backend/src/modules/marketplace/{controllers,services,matching,spot-demanda,chat,dto,entities}
+mkdir -p backend/src/modules/contratos/{controllers,services,templates,assinatura,dto,entities}
+mkdir -p backend/src/modules/operacao/{controllers,services,geofencing,monitoramento,alertas,dto,entities}
+mkdir -p backend/src/modules/pagamento/{controllers,services,escrow,liberacao,dto,entities}
+mkdir -p backend/src/modules/reputacao/{controllers,services,score,esg,dto,entities}
+
+mkdir -p backend/src/common/{decorators,filters,interceptors,middleware,pipes,queue,crypto}
+mkdir -p backend/src/{config,database,utils}
+mkdir -p backend/src/utils/{ocr,pdf,geolocalizacao,validators}
+mkdir -p backend/{prisma,uploads,templates,tests}
+mkdir -p backend/uploads/{empresas,embarcacoes,tripulacao,contratos}
+
+# Frontend estrutura
+mkdir -p frontend/src/{api,components,features,hooks,lib,pages,router,store,styles,types}
+mkdir -p frontend/src/components/{ui,forms,layout,shared,maps,documents}
+mkdir -p frontend/src/features/{auth,onboarding,compliance,empresas,perfis,embarcacoes,marketplace,contratos,operacao,pagamento,dashboard}
+mkdir -p frontend/src/features/auth/{components,hooks}
+mkdir -p frontend/src/features/onboarding/{components,steps,hooks}
+mkdir -p frontend/src/features/compliance/{components,upload,status,hooks}
+mkdir -p frontend/src/features/marketplace/{components,demanda,matching,chat}
+mkdir -p frontend/src/features/contratos/{components,assinatura,visualizacao,hooks}
+mkdir -p frontend/src/features/operacao/{components,mapa,alertas,hooks}
+mkdir -p frontend/src/features/pagamento/{components,escrow,liberacao,hooks}
+mkdir -p frontend/src/features/dashboard/{components,metrics,hooks}
+
+mkdir -p frontend/public
+
+# ========================
+# 2. CRIAR ARQUIVOS BACKEND BÁSICOS
+# ========================
+
+# Backend package.json
+cat > backend/package.json << 'EOF'
+{
+  "name": "fleet-flow-backend",
+  "version": "1.0.0",
+  "description": "Backend do sistema Fleets Flow",
+  "scripts": {
+    "build": "nest build",
+    "start": "nest start",
+    "dev": "nest start --watch",
+    "start:prod": "node dist/main",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "studio": "prisma studio",
+    "queue:worker": "ts-node src/queue/worker.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/jwt": "^10.0.0",
+    "@nestjs/passport": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/swagger": "^7.0.0",
+    "@nestjs/throttler": "^5.0.0",
+    "@prisma/client": "^5.0.0",
+    "bcrypt": "^5.1.0",
+    "bull": "^4.11.0",
+    "class-transformer": "^0.5.0",
+    "class-validator": "^0.14.0",
+    "crypto-js": "^4.2.0",
+    "express": "^4.18.0",
+    "ioredis": "^5.3.0",
+    "multer": "^1.4.5",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0",
+    "postgis": "^0.0.1",
+    "rxjs": "^7.8.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.0.0",
+    "@nestjs/schematics": "^10.0.0",
+    "@nestjs/testing": "^10.0.0",
+    "@types/express": "^4.17.0",
+    "@types/jest": "^29.5.0",
+    "@types/multer": "^1.4.7",
+    "@types/node": "^20.0.0",
+    "@types/passport-jwt": "^3.0.0",
+    "jest": "^29.5.0",
+    "prisma": "^5.0.0",
+    "ts-jest": "^29.1.0",
+    "ts-loader": "^9.4.0",
+    "ts-node": "^10.9.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.0.0"
+  }
+}
+EOF
+
+# Docker Compose
+cat > backend/docker-compose.yml << 'EOF'
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: fleetsflow
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+
+volumes:
+  postgres_data:
+EOF
+
+# Arquivo de inicialização do Postgres com PostGIS
+cat > backend/init.sql << 'EOF'
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS postgis_topology;
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
+CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
+EOF
+
+# NestJS config
+cat > backend/nest-cli.json << 'EOF'
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": true,
+          "introspectComments": true
+        }
+      }
+    ]
+  }
+}
+EOF
+
+# TypeScript config
+cat > backend/tsconfig.json << 'EOF'
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["src/*"],
+      "@modules/*": ["src/modules/*"],
+      "@common/*": ["src/common/*"],
+      "@utils/*": ["src/utils/*"]
+    }
+  }
+}
+EOF
+
+# Environment example
+cat > backend/.env.example << 'EOF'
+# Database
+DATABASE_URL="postgresql://admin:secret@localhost:5432/fleetsflow?schema=public"
+
+# Redis
+REDIS_URL="redis://localhost:6379"
+
+# JWT
+JWT_SECRET="your-super-secret-jwt-key-change-in-production"
+JWT_EXPIRATION="24h"
+
+# App
+PORT=3000
+NODE_ENV=development
+UPLOAD_PATH="./uploads"
+
+# Compliance
+COMPLIANCE_THRESHOLD=70
+CHAVE_SECRET="chave-amarela-secret-key"
+
+# API Keys (opcional)
+GOOGLE_MAPS_API_KEY=""
+AIS_API_KEY=""
+EOF
+
+# ========================
+# 3. CRIAR PRISMA SCHEMA
+# ========================
+
+cat > backend/prisma/schema.prisma << 'EOF'
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Empresa {
+  id                Int      @id @default(autoincrement())
+  razaoSocial       String   @map("razao_social")
+  cnpj              String   @unique
+  nomeFantasia      String?  @map("nome_fantasia")
+  email             String   @unique
+  telefone          String?
+  cep               String?
+  logradouro        String?
+  numero            String?
+  bairro            String?
+  cidade            String?
+  estado            String?
+  responsavelNome   String   @map("responsavel_nome")
+  responsavelCpf    String   @map("responsavel_cpf")
+  responsavelCargo  String   @map("responsavel_cargo")
+  aceiteLgpd        Boolean  @map("aceite_lgpd") @default(false)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  
+  perfis Perfil[]
+  documentos Documento[]
+  
+  @@map("empresas")
+}
+
+model Perfil {
+  id                Int       @id @default(autoincrement())
+  tipo              PerfilTipo
+  empresaId         Int       @map("empresa_id")
+  chaveOperacional  String?   @unique @map("chave_operacional")
+  dataValidadeChave DateTime? @map("data_validade_chave")
+  capitalSocial     Float?    @map("capital_social")
+  numFuncionarios   Int?      @map("num_funcionarios")
+  ativo             Boolean   @default(true)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  
+  empresa           Empresa   @relation(fields: [empresaId], references: [id])
+  embarcacoes       Embarcacao[]
+  complianceDocs    ComplianceDocumento[]
+  
+  @@map("perfis")
+  @@index([empresaId])
+  @@index([chaveOperacional])
+}
+
+enum PerfilTipo {
+  ARMADOR_OFFSHORE
+  ARMADOR_CABOTAGEM
+  TERMINAL_PORTUARIO
+  PRATICAGEM
+  ARMADOR_FLUVIAL
+  MARITIMO_CRUZEIROS
+  REBOQUE_LANCHA
+  AGENTE_MARITIMO
+  CONTRATANTE
+  AGENTE_GOVERNAMENTAL
+  CERTIFICADOR
+  SEGURADORA
+}
+
+model Embarcacao {
+  id                  Int       @id @default(autoincrement())
+  imoNumber           String?   @unique @map("imo_number")
+  nome                String
+  tipo                String
+  bandeira            String    @default("BRASILEIRA")
+  perfilId            Int       @map("perfil_id")
+  anoConstrucao       Int?      @map("ano_construcao")
+  capacidadeCarga     Float?    @map("capacidade_carga")
+  potenciaTotal       Float?    @map("potencia_total")
+  posicionamentoDp    String?   @map("posicionamento_dp")
+  capacidadeGuindaste Float?    @map("capacidade_guindaste")
+  numTripulantes      Int?      @map("num_tripulantes")
+  ativa               Boolean   @default(true)
+  createdAt           DateTime  @default(now()) @map("created_at")
+  
+  perfil              Perfil    @relation(fields: [perfilId], references: [id])
+  certificados        Certificado[]
+  operacoes           Operacao[]
+  
+  @@map("embarcacoes")
+  @@index([perfilId])
+  @@index([imoNumber])
+}
+
+model Certificado {
+  id            Int       @id @default(autoincrement())
+  tipo          String
+  embarcacaoId  Int       @map("embarcacao_id")
+  arquivoUrl    String    @map("arquivo_url")
+  dataValidade  DateTime? @map("data_validade")
+  valido        Boolean   @default(true)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  embarcacao    Embarcacao @relation(fields: [embarcacaoId], references: [id])
+  
+  @@map("certificados")
+  @@index([embarcacaoId])
+  @@index([dataValidade])
+}
+
+model ComplianceDocumento {
+  id          Int       @id @default(autoincrement())
+  perfilId    Int       @map("perfil_id")
+  tipo        String
+  arquivoUrl  String    @map("arquivo_url")
+  status      DocStatus @default("PENDENTE")
+  dataValidade DateTime? @map("data_validade")
+  observacao  String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  validadoEm  DateTime? @map("validado_em")
+  
+  perfil      Perfil    @relation(fields: [perfilId], references: [id])
+  
+  @@map("compliance_documentos")
+  @@index([perfilId])
+  @@index([status])
+}
+
+enum DocStatus {
+  PENDENTE
+  VALIDADO
+  INVALIDO
+  EXPIRADO
+}
+
+model Documento {
+  id            Int       @id @default(autoincrement())
+  empresaId     Int       @map("empresa_id")
+  tipo          String
+  arquivoUrl    String    @map("arquivo_url")
+  descricao     String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  empresa       Empresa   @relation(fields: [empresaId], references: [id])
+  
+  @@map("documentos")
+  @@index([empresaId])
+}
+
+model DemandaSpot {
+  id              Int       @id @default(autoincrement())
+  contratanteId   Int       @map("contratante_id")
+  tipoServico     String    @map("tipo_servico")
+  localizacao     String?
+  latitude        Float?
+  longitude       Float?
+  dataInicio      DateTime  @map("data_inicio")
+  dataFim         DateTime  @map("data_fim")
+  requisitos      Json?
+  status          DemandaStatus @default("ABERTA")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  contratante     Perfil    @relation(fields: [contratanteId], references: [id])
+  matches         Match[]
+  
+  @@map("demanda_spots")
+  @@index([contratanteId])
+  @@index([status])
+}
+
+enum DemandaStatus {
+  ABERTA
+  EM_NEGOCIACAO
+  FECHADA
+  CANCELADA
+}
+
+model Match {
+  id              Int       @id @default(autoincrement())
+  demandaId       Int       @map("demanda_id")
+  pmeId           Int       @map("pme_id")
+  embarcacaoId    Int       @map("embarcacao_id")
+  status          MatchStatus @default("PENDENTE")
+  precoProposto   Float?    @map("preco_proposto")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  demanda         DemandaSpot @relation(fields: [demandaId], references: [id])
+  pme             Perfil      @relation(fields: [pmeId], references: [id])
+  embarcacao      Embarcacao  @relation(fields: [embarcacaoId], references: [id])
+  contrato        Contrato?
+  
+  @@map("matches")
+  @@unique([demandaId, pmeId, embarcacaoId])
+  @@index([demandaId])
+  @@index([pmeId])
+}
+
+enum MatchStatus {
+  PENDENTE
+  ACEITO
+  RECUSADO
+  EXPIRADO
+}
+
+model Contrato {
+  id              String    @id @default(uuid())
+  matchId         Int       @unique @map("match_id")
+  hashChave       String    @map("hash_chave")
+  valor           Float
+  status          ContratoStatus @default("ASSINADO")
+  dataAssinatura  DateTime? @map("data_assinatura")
+  dataInicio      DateTime? @map("data_inicio")
+  dataFim         DateTime? @map("data_fim")
+  arquivoUrl      String?   @map("arquivo_url")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  match           Match     @relation(fields: [matchId], references: [id])
+  pagamento       Pagamento?
+  operacao        Operacao?
+  
+  @@map("contratos")
+  @@index([hashChave])
+}
+
+enum ContratoStatus {
+  RASCUNHO
+  ASSINADO
+  EM_EXECUCAO
+  CONCLUIDO
+  CANCELADO
+}
+
+model Operacao {
+  id              Int       @id @default(autoincrement())
+  contratoId      String    @unique @map("contrato_id")
+  embarcacaoId    Int       @map("embarcacao_id")
+  status          OperacaoStatus @default("AGENDADA")
+  dataInicioReal  DateTime? @map("data_inicio_real")
+  dataFimReal     DateTime? @map("data_fim_real")
+  logs            Json?
+  alertas         Json?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  contrato        Contrato  @relation(fields: [contratoId], references: [id])
+  embarcacao      Embarcacao @relation(fields: [embarcacaoId], references: [id])
+  
+  @@map("operacoes")
+}
+
+enum OperacaoStatus {
+  AGENDADA
+  EM_ANDAMENTO
+  CONCLUIDA
+  CANCELADA
+}
+
+model Pagamento {
+  id              Int       @id @default(autoincrement())
+  contratoId      String    @unique @map("contrato_id")
+  valorEscrow     Float     @map("valor_escrow")
+  status          PagamentoStatus @default("PENDENTE")
+  dataLiberacao   DateTime? @map("data_liberacao")
+  comprovanteUrl  String?   @map("comprovante_url")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  contrato        Contrato  @relation(fields: [contratoId], references: [id])
+  
+  @@map("pagamentos")
+}
+
+enum PagamentoStatus {
+  PENDENTE
+  RESERVADO
+  LIBERADO
+  CANCELADO
+}
+
+model Reputacao {
+  id              Int       @id @default(autoincrement())
+  perfilId        Int       @unique @map("perfil_id")
+  score           Float     @default(0.0)
+  operacoesConcluidas Int  @default(0) @map("operacoes_concluidas")
+  taxaSucesso     Float     @default(0.0) @map("taxa_sucesso")
+  emissoesCo2     Float?    @map("emissoes_co2") @default(0.0)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  perfil          Perfil    @relation(fields: [perfilId], references: [id])
+  
+  @@map("reputacao")
+}
+EOF
+
+# ========================
+# 4. CRIAR ARQUIVOS FRONTEND BÁSICOS
+# ========================
+
+# Frontend package.json
+cat > frontend/package.json << 'EOF'
+{
+  "name": "fleet-flow-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "axios": "^1.6.2",
+    "zustand": "^4.4.7",
+    "react-hook-form": "^7.48.2",
+    "zod": "^3.22.4",
+    "@hookform/resolvers": "^3.3.2",
+    "recharts": "^2.10.3",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "date-fns": "^3.0.6",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.2.0",
+    "lucide-react": "^0.309.0",
+    "socket.io-client": "^4.7.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
+  }
+}
+EOF
+
+# Vite config
+cat > frontend/vite.config.ts << 'EOF'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@features': path.resolve(__dirname, './src/features'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@lib': path.resolve(__dirname, './src/lib'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@store': path.resolve(__dirname, './src/store'),
+      '@types': path.resolve(__dirname, './src/types'),
+    }
+  },
+  server: {
+    port: 5173,
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      }
+    }
+  }
+})
+EOF
+
+# Tailwind config
+cat > frontend/tailwind.config.js << 'EOF'
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
+        secondary: {
+          50: '#fefce8',
+          100: '#fef9c3',
+          200: '#fef08a',
+          300: '#fde047',
+          400: '#facc15',
+          500: '#eab308',
+          600: '#ca8a04',
+          700: '#a16207',
+          800: '#854d0e',
+          900: '#713f12',
+        },
+        success: {
+          500: '#10b981',
+        },
+        warning: {
+          500: '#f59e0b',
+        },
+        danger: {
+          500: '#ef4444',
+        }
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [],
+}
+EOF
+
+# PostCSS config
+cat > frontend/postcss.config.js << 'EOF'
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+EOF
+
+# TypeScript config
+cat > frontend/tsconfig.json << 'EOF'
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@features/*": ["./src/features/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@store/*": ["./src/store/*"],
+      "@types/*": ["./src/types/*"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+EOF
+
+cat > frontend/tsconfig.node.json << 'EOF'
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+  "include": ["vite.config.ts"]
+}
+EOF
+
+# Index.html
+cat > frontend/index.html << 'EOF'
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fleets Flow | Sistema Marítimo Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+EOF
+
+# Main entry point
+cat > frontend/src/main.tsx << 'EOF'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './styles/globals.css'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+EOF
+
+# App component
+cat > frontend/src/App.tsx << 'EOF'
+import { BrowserRouter as Router } from 'react-router-dom'
+import AppRoutes from './router'
+
+function App() {
+  return (
+    <Router>
+      <AppRoutes />
+    </Router>
+  )
+}
+
+export default App
+EOF
+
+# Global styles
+cat > frontend/src/styles/globals.css << 'EOF'
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 font-sans antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 text-white px-4 py-2 rounded-lg font-medium 
+           hover:bg-primary-700 transition-colors focus:outline-none 
+           focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-primary-700 border border-primary-300 px-4 py-2 rounded-lg 
+           font-medium hover:bg-primary-50 transition-colors focus:outline-none 
+           focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none 
+           focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+}
+EOF
+
+# ========================
+# 5. CRIAR ARQUIVOS INICIAIS IMPORTANTES
+# ========================
+
+# Backend main.ts
+cat > backend/src/main.ts << 'EOF'
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  // Configuração de CORS
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true,
+  });
+
+  // Configuração de validação global
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  // Configuração do Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Fleets Flow API')
+    .setDescription('API do sistema Fleets Flow')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  // Configuração de porta
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  
+  console.log(`🚀 Application is running on: http://localhost:${port}`);
+  console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
+}
+
+bootstrap();
+EOF
+
+# App Module básico
+cat > backend/src/app.module.ts << 'EOF'
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './modules/auth/auth.module';
+import { EmpresasModule } from './modules/empresas/empresas.module';
+import { PerfisModule } from './modules/perfis/perfis.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AuthModule,
+    EmpresasModule,
+    PerfisModule,
+    // Outros módulos serão importados aqui conforme forem criados
+  ],
+  controllers: [],
+  providers: [],
+})
+export class AppModule {}
+EOF
+
+# ========================
+# 6. MENSAGEM FINAL
+# ========================
+
+echo "✅ Estrutura do projeto FLEETS FLOW criada com sucesso!"
+echo ""
+echo "📁 ESTRUTURA CRIADA:"
+echo "  ├── backend/          (NestJS + Prisma + PostgreSQL)"
+echo "  └── frontend/         (React + TypeScript + Vite)"
+echo ""
+echo "🚀 PRÓXIMOS PASSOS:"
+echo "1. cd fleets-flow/backend"
+echo "2. npm install"
+echo "3. npx prisma generate"
+echo "4. docker-compose up -d"
+echo "5. npm run dev"
+echo ""
+echo "🖥️  URLs:"
+echo "  - Backend: http://localhost:3000"
+echo "  - Frontend: http://localhost:5173"
+echo "  - API Docs: http://localhost:3000/api/docs"
+echo "  - Prisma Studio: npx prisma studio"
+echo ""
+echo "🔥 O projeto está pronto para desenvolvimento!"
