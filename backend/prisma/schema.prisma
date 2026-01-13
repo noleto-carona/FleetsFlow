@@ -120,7 +120,7 @@ model ComplianceDocumento {
   perfilId    Int       @map("perfil_id")
   tipo        String
   arquivoUrl  String    @map("arquivo_url")
-  status      DocStatus @default("PENDENTE")
+  status      DocStatus @default(PENDENTE)
   dataValidade DateTime? @map("data_validade")
   observacao  String?
   createdAt   DateTime  @default(now()) @map("created_at")
@@ -164,7 +164,7 @@ model DemandaSpot {
   dataInicio      DateTime  @map("data_inicio")
   dataFim         DateTime  @map("data_fim")
   requisitos      Json?
-  status          DemandaStatus @default("ABERTA")
+  status          DemandaStatus @default(ABERTA)
   createdAt       DateTime  @default(now()) @map("created_at")
   
   contratante     Perfil    @relation("DemandasCriadas", fields: [contratanteId], references: [id])
@@ -187,7 +187,7 @@ model Match {
   demandaId       Int       @map("demanda_id")
   pmeId           Int       @map("pme_id")
   embarcacaoId    Int       @map("embarcacao_id")
-  status          MatchStatus @default("PENDENTE")
+  status          MatchStatus @default(PENDENTE)
   precoProposto   Float?    @map("preco_proposto")
   createdAt       DateTime  @default(now()) @map("created_at")
   
@@ -214,7 +214,7 @@ model Contrato {
   matchId         Int       @unique @map("match_id")
   hashChave       String    @map("hash_chave")
   valor           Float
-  status          ContratoStatus @default("ASSINADO")
+  status          ContratoStatus @default(ASSINADO)
   dataAssinatura  DateTime? @map("data_assinatura")
   dataInicio      DateTime? @map("data_inicio")
   dataFim         DateTime? @map("data_fim")
@@ -241,7 +241,7 @@ model Operacao {
   id              Int       @id @default(autoincrement())
   contratoId      String    @unique @map("contrato_id")
   embarcacaoId    Int       @map("embarcacao_id")
-  status          OperacaoStatus @default("AGENDADA")
+  status          OperacaoStatus @default(AGENDADA)
   dataInicioReal  DateTime? @map("data_inicio_real")
   dataFimReal     DateTime? @map("data_fim_real")
   logs            Json?
@@ -265,7 +265,7 @@ model Pagamento {
   id              Int       @id @default(autoincrement())
   contratoId      String    @unique @map("contrato_id")
   valorEscrow     Float     @map("valor_escrow")
-  status          PagamentoStatus @default("PENDENTE")
+  status          PagamentoStatus @default(PENDENTE)
   dataLiberacao   DateTime? @map("data_liberacao")
   comprovanteUrl  String?   @map("comprovante_url")
   createdAt       DateTime  @default(now()) @map("created_at")
