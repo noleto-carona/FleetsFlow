@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fleet Flow - Interactive Operations Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#00f2ff",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#020617",
+                        "sidebar-dark": "#0a1120",
+                        "alert-red": "#ef4444",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"],
+                    },
+                    boxShadow: {
+                        'neon': '0 0 15px rgba(0, 242, 255, 0.4)',
+                        'neon-strong': '0 0 25px rgba(0, 242, 255, 0.6)',
+                    }
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        .radar-ring {
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .map-bg {
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(0, 242, 255, 0.1) 1px, transparent 0),
+                linear-gradient(rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.9));
+            background-size: 50px 50px, 100% 100%;
+        }
+        .glass-panel {
+            background: rgba(10, 17, 32, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+        }
+        .nav-item {
+            @apply flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 transition-all duration-300 relative overflow-hidden;
+        }
+        .nav-item:hover {
+            @apply text-primary bg-primary/10 shadow-neon;
+        }
+        .nav-item.active {
+            @apply text-primary bg-primary/20 border border-primary/30 shadow-neon-strong;
+        }
+        .widget-card {
+            @apply glass-panel p-4 rounded-xl cursor-pointer hover:border-primary transition-all duration-300;
+        }
+        @keyframes scan {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .radar-scanner {
+            background: conic-gradient(from 0deg, rgba(0, 242, 255, 0.2) 0%, transparent 20%);
+            animation: scan 4s linear infinite;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 242, 255, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-dark text-slate-100 min-h-screen flex overflow-hidden">
+<aside class="w-64 bg-sidebar-dark border-r border-slate-800 flex flex-col z-50">
+<div class="p-6 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-neon">
+<span class="material-symbols-outlined text-slate-900 font-bold scale-110">sailing</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight text-white leading-none">FLEET<span class="text-primary tracking-widest">FLOW</span></h1>
+<span class="text-[10px] text-primary/60 font-mono font-bold">OPS COMMAND v4.2</span>
+</div>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto custom-scrollbar">
+<div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-2">Navigation</div>
+<a class="nav-item" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="nav-item" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-medium">Compliance</span>
+</a>
+<a class="nav-item" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-medium">Marketplace</span>
+</a>
+<a class="nav-item active" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-medium">Operations</span>
+</a>
+<a class="nav-item" href="#">
+<span class="material-symbols-outlined">eco</span>
+<span class="font-medium">ESG Metrics</span>
+</a>
+<div class="pt-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-2">Logistics</div>
+<a class="nav-item" href="#">
+<span class="material-symbols-outlined">lan</span>
+<span class="font-medium">Network</span>
+</a>
+<a class="nav-item" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-medium">Activity Log</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-800">
+<div class="nav-item cursor-pointer">
+<div class="w-8 h-8 rounded-full border border-primary/30 overflow-hidden">
+<img alt="User avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC38JRORLVAV8gV06Krc969mRft_9VKS1G11Cs9FMe-Nr6-nvp-Adb-F-Z_tP4j6V1gjBA4OEz2tucL0DNo-s6fRm5hx5cDzJAPv4JbCJqNJINfYZs-OzteifuquOCgbjRnLijyt3Yz6cT594LVnQkb-qsh4kvlKXcBzjIs_BzJqMs8rCf-TFA7pxw0mqwmPxpzVvWjDakPTkvodSbj7zqq7u9w0K9nMcifB_i8gkbvkKuYjkQmEl0RUx1GqgpAH8rpS3uK1-13Ez_"/>
+</div>
+<span class="font-medium">Adm. Jensen</span>
+<span class="material-symbols-outlined ml-auto text-sm">settings</span>
+</div>
+</div>
+</aside>
+<main class="flex-1 relative flex flex-col">
+<header class="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-background-dark/80 backdrop-blur-xl z-40">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition-colors">search</span>
+<input class="bg-slate-900/50 border border-slate-800 focus:border-primary/50 text-white rounded-lg pl-12 pr-4 py-2 text-sm w-96 focus:ring-0 transition-all outline-none" placeholder="Vessel Search (Name, IMO, MMSI)..." type="text"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<kbd class="bg-slate-800 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-400">⌘K</kbd>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 bg-primary/5 hover:bg-primary/10 border border-primary/20 text-primary px-4 py-2 rounded-lg text-sm font-medium transition-all group">
+<span class="material-symbols-outlined text-sm animate-spin">refresh</span>
+                Refresh Data
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-1"></span>
+</button>
+<div class="h-8 w-px bg-slate-800"></div>
+<button class="relative p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-alert-red rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
+</button>
+</div>
+</header>
+<div class="flex-1 relative map-bg overflow-hidden">
+<div class="absolute top-6 left-1/2 -translate-x-1/2 z-30 w-full max-w-xl px-4">
+<div class="bg-slate-900 border-l-4 border-alert-red px-6 py-4 rounded-r-lg flex items-center gap-4 shadow-2xl backdrop-blur-md">
+<div class="bg-alert-red/20 p-2 rounded-full">
+<span class="material-symbols-outlined text-alert-red animate-pulse">warning</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-white uppercase tracking-wider">Restricted Zone Entry Warning</h3>
+<p class="text-xs text-slate-400 mt-0.5">Vessel <span class="text-white font-mono">AURORA-IX</span> entering North Buffer in 24m 12s.</p>
+</div>
+<button class="ml-auto material-symbols-outlined text-slate-500 hover:text-white transition-colors">close</button>
+</div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: linear-gradient(#00f2ff 1px, transparent 1px), linear-gradient(90deg, #00f2ff 1px, transparent 1px); background-size: 100px 100px;"></div>
+<div class="relative w-[600px] h-[600px]">
+<div class="radar-ring w-[100%] h-[100%]"></div>
+<div class="radar-ring w-[80%] h-[80%] border-primary/10"></div>
+<div class="radar-ring w-[60%] h-[60%] border-primary/20"></div>
+<div class="radar-ring w-[40%] h-[40%] border-primary/30"></div>
+<div class="radar-scanner absolute inset-0 rounded-full"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+<div class="group relative cursor-pointer">
+<div class="absolute -inset-12 border border-dashed border-primary/20 rounded-full animate-[spin_20s_linear_infinite]"></div>
+<div class="relative flex items-center justify-center">
+<div class="absolute w-24 h-24 bg-primary rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+<div class="relative w-16 h-16 glass-panel rounded-full flex items-center justify-center border-primary shadow-neon-strong group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">directions_boat</span>
+</div>
+</div>
+<div class="absolute top-20 left-1/2 -translate-x-1/2 whitespace-nowrap bg-background-dark border border-primary/30 p-2 rounded shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+<div class="text-[10px] font-bold text-primary font-mono tracking-tighter">VESSEL: NORTH STAR IV</div>
+<div class="text-[9px] text-slate-400 font-mono">LAT: 51.5074° N | LON: 0.1278° W</div>
+</div>
+</div>
+</div>
+<div class="absolute top-[20%] right-[30%] opacity-60">
+<span class="material-symbols-outlined text-primary text-sm">emergency_recording</span>
+</div>
+<div class="absolute bottom-[25%] left-[20%] opacity-40">
+<span class="material-symbols-outlined text-primary text-sm">adjust</span>
+</div>
+</div>
+</div>
+<div class="absolute top-6 right-8 w-80 flex flex-col gap-4 z-30">
+<div class="widget-card group relative">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">speed</span>
+<span class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Cruising Speed</span>
+</div>
+<span class="text-[10px] font-mono text-green-400 bg-green-400/10 px-1 rounded">+0.2</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold font-mono text-white group-hover:text-primary transition-colors">12.5</span>
+<span class="text-xs text-slate-500">KNOTS</span>
+</div>
+<div class="h-10 mt-3 flex items-end gap-0.5 overflow-hidden group-hover:h-24 transition-all duration-500 ease-in-out">
+<div class="flex-1 bg-primary/20 h-[30%]"></div>
+<div class="flex-1 bg-primary/30 h-[45%]"></div>
+<div class="flex-1 bg-primary/20 h-[40%]"></div>
+<div class="flex-1 bg-primary/40 h-[60%]"></div>
+<div class="flex-1 bg-primary/20 h-[55%]"></div>
+<div class="flex-1 bg-primary/50 h-[80%]"></div>
+<div class="flex-1 bg-primary/40 h-[70%]"></div>
+<div class="flex-1 bg-primary/60 h-[85%]"></div>
+<div class="flex-1 bg-primary/80 h-[90%] shadow-neon"></div>
+</div>
+</div>
+<div class="widget-card group">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">explore</span>
+<span class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Course Heading</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold font-mono text-white">045°</span>
+<span class="text-xs text-slate-500">NORTH EAST</span>
+</div>
+<div class="mt-4 flex items-center justify-center h-0 group-hover:h-24 opacity-0 group-hover:opacity-100 transition-all duration-500 overflow-hidden">
+<div class="w-20 h-20 border-2 border-primary/20 rounded-full relative">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-1 h-12 bg-primary rounded-full origin-bottom -translate-y-6 rotate-45 shadow-neon"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="widget-card group">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">near_me</span>
+<span class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Arrival Target</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold font-mono text-white">15.4</span>
+<span class="text-xs text-slate-500">KM TO PORT</span>
+</div>
+<div class="mt-4 opacity-0 h-0 group-hover:h-12 group-hover:opacity-100 transition-all duration-500 overflow-hidden">
+<div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3 shadow-neon"></div>
+</div>
+<div class="flex justify-between mt-2 font-mono text-[10px] text-slate-500">
+<span>DEP: ROTTERDAM</span>
+<span>ETA: 02:40 PM</span>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-8 left-8 flex items-center gap-4 z-30">
+<div class="flex gap-2 p-1 glass-panel rounded-xl">
+<button class="w-10 h-10 rounded-lg flex items-center justify-center text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined">remove_circle</span>
+</button>
+<div class="w-px bg-slate-800 my-2 mx-1"></div>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined">layers</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined">3d_rotation</span>
+</button>
+</div>
+<div class="flex items-center gap-3 glass-panel px-4 py-3 rounded-xl">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border border-background-dark bg-slate-700"></div>
+<div class="w-6 h-6 rounded-full border border-background-dark bg-slate-800"></div>
+<div class="w-6 h-6 rounded-full border border-background-dark bg-primary flex items-center justify-center text-[8px] font-bold text-slate-900">+12</div>
+</div>
+<span class="text-[10px] font-mono text-slate-400 font-bold">OPERATORS ONLINE</span>
+</div>
+</div>
+<div class="absolute bottom-8 right-8 z-30">
+<div class="flex flex-col items-end gap-2">
+<div class="flex items-center gap-2 glass-panel px-4 py-2 rounded-lg border border-primary/20 bg-primary/5">
+<div class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+</div>
+<span class="text-[10px] font-mono font-bold text-primary tracking-widest uppercase">Encryption Active</span>
+</div>
+<div class="text-[9px] font-mono text-slate-600 uppercase tracking-widest">Global Terminal Secure // 40.7128° N, 74.0060° W</div>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>
