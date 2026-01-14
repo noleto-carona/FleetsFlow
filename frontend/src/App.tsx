@@ -1,14 +1,15 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import BackgroundPrincipal from './layouts/BackgroundPrincipal';
-import RadarMap from './components/RadarMap';
+import OperationsPage from './pages/Operations';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<BackgroundPrincipal />} />
-        <Route path="/test-radar" element={<RadarMap />} />
+        <Route path="/operacoes" element={<OperationsPage />} />
+        {/* Redirecionamento temporário para facilitar navegação */}
+        <Route path="/dashboard" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
