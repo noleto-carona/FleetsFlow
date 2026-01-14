@@ -11,8 +11,7 @@ if "%SOURCE_DIR:~-1%"=="\" set "SOURCE_DIR=%SOURCE_DIR:~0,-1%"
 set "DEST_ROOT=F:\backup_fleet_flow"
 
 :: Obtem data e hora para nome da pasta (Formato: YYYY-MM-DD_HH-MM-SS)
-for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value') do set datetime=%%I
-set "TIMESTAMP=%datetime:~0,4%-%datetime:~4,2%-%datetime:~6,2%_%datetime:~8,2%-%datetime:~10,2%-%datetime:~12,2%"
+for /f %%i in ('powershell -command "Get-Date -Format yyyy-MM-dd_HH-mm-ss"') do set TIMESTAMP=%%i
 
 set "BACKUP_DIR=%DEST_ROOT%\FleetsFlow_Backup_%TIMESTAMP%"
 set "LOG_FILE=%BACKUP_DIR%\backup_log.txt"
@@ -55,7 +54,7 @@ echo ---------------------------------------- >> "%LOG_FILE%"
 :: /XD  :: Exclui diretorios correspondentes aos nomes/caminhos fornecidos.
 :: /XF  :: Exclui arquivos correspondentes aos nomes fornecidos.
 
-robocopy "%SOURCE_DIR%" "%BACKUP_DIR%" /E /ZB /DCOPY:T /COPY:DAT /R:3 /W:1 ^
+robocopy "%SOURCE_DIR%" "%BACKUP_DIR%" /E /DCOPY:T /COPY:DAT /R:3 /W:1 ^
     /XD "node_modules" ".git" "dist" "build" ".next" "coverage" ".vscode" ".idea" "tmp" "temp" ^
     /XF "*.log" "*.tmp" "thumbs.db" "desktop.ini" ^
     /TEE /LOG+:"%LOG_FILE%"

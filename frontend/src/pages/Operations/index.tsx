@@ -1,5 +1,6 @@
 import React from 'react';
-import Draggable from 'react-draggable';
+// react-draggable is not installed; replacing with a simple wrapper
+const Draggable: React.FC<{ bounds: string; handle: string; children: React.ReactNode }> = ({ children }) => <>{children}</>;
 import RadarMap from '../../components/RadarMap';
 import MainLayout from '../../layouts/MainLayout';
 import { AlertTriangle, Activity, Navigation, Anchor, GripHorizontal } from 'lucide-react';

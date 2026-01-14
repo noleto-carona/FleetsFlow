@@ -13,6 +13,12 @@ Este arquivo registra alterações importantes, criações e decisões tomadas d
   - Arquivo: `backup_project.bat` na raiz do projeto.
   - Funcionalidade: Realiza backup completo do projeto (excluindo `node_modules`, `.git` e pastas de build) para `F:\backup_fleet_flow`.
   - Detalhes: Gera pasta com timestamp e log da operação.
+- **Execução de Backup**:
+  - Backup realizado com sucesso em `F:\backup_fleet_flow`.
+  - Ajuste no script `.bat` para não utilizar o modo `/ZB` (backup mode) e usar PowerShell para gerar timestamp confiável.
+
+### Decisões e Discussões
+- **Estratégia Mobile**: Confirmado que para um aplicativo instalável nativo, será necessário criar as telas do zero na pasta `mobile` (usando React Native), pois a estrutura visual (DOM/HTML) do frontend web não é diretamente compatível. A lógica de negócio, no entanto, será reaproveitada.
 
 ### Notas
 - O usuário solicitou a criação deste arquivo para manter um histórico persistente das atividades.
