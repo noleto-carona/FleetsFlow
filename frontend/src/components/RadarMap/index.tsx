@@ -85,20 +85,24 @@ const RadarMap: React.FC<RadarMapProps> = ({ volume = 1 }) => {
   }, [rotation, vesselAngles, volume]);
 
   return (
-    <div className="relative w-full h-full min-h-screen bg-[#0a192f] flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-full bg-[#0a192f] overflow-hidden">
       <div 
         className="absolute inset-0 opacity-10" 
         style={{ 
-          backgroundImage: 'linear-gradient(#64ffda 1px, transparent 1px), linear-gradient(90deg, #64ffda 1px, transparent 1px)',
-          backgroundSize: '40px 40px'
-        }} 
+            backgroundImage: 'linear-gradient(#64ffda 1px, transparent 1px), linear-gradient(90deg, #64ffda 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+            backgroundPosition: '50px 0px' // <-- AJUSTE AQUI: 1º valor = Esquerda/Direita, 2º valor = Topo/Baixo
+          }} 
       />
 
       <div
-        className="relative w-[600px] h-[600px]"
+        className="absolute w-[600px] h-[600px]"
         style={{
           transform: 'scale(0.7)',
-          transformOrigin: 'center',
+          transformOrigin: 'top left',
+          // VOCÊ PODE ALTERAR ESTES VALORES PARA MOVER O RADAR
+          top: '170px',   // Mover para cima (diminuir) ou baixo (aumentar)
+          left: '600px',  // Mover para esquerda (diminuir) ou direita (aumentar)
         }}
       >
         <div className="absolute inset-8 rounded-full overflow-hidden">

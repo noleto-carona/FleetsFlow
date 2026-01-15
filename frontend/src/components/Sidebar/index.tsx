@@ -34,14 +34,8 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className="h-screen w-64 bg-[#112240]/90 backdrop-blur-md border-r border-[#233554] flex flex-col fixed left-0 top-0 z-50">
-      {/* Logo Area */}
-      <div className="p-6 flex items-center justify-center border-b border-[#233554]/50">
-        <h1 className="text-2xl font-rockwell font-black text-[#ccd6f6]">
-          Fleets<span className="text-[#64ffda]">Flow</span>
-        </h1>
-      </div>
-
+    <div className="w-64 bg-[#112240]/90 backdrop-blur-md border-r border-[#233554] flex flex-col fixed left-0 top-[104px] bottom-0 z-40">
+      
       {/* Navigation */}
       <nav className="flex-1 py-6 px-3 space-y-2">
         {navItems.map((item) => (
