@@ -94,7 +94,13 @@ const RadarMap: React.FC<RadarMapProps> = ({ volume = 1 }) => {
         }} 
       />
 
-      <div className="relative w-[600px] h-[600px]">
+      <div
+        className="relative w-[600px] h-[600px]"
+        style={{
+          transform: 'scale(0.7)',
+          transformOrigin: 'center',
+        }}
+      >
         <div className="absolute inset-8 rounded-full overflow-hidden">
           <div
             className="absolute inset-0"

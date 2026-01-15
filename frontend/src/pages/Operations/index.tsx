@@ -50,8 +50,8 @@ const OperationsPage: React.FC = () => {
           </div>
 
           <Draggable bounds="parent" handle=".drag-handle">
-            <div className="absolute right-8 top-24 w-80 pointer-events-auto cursor-move">
-              <div className="bg-[#112240]/80 backdrop-blur-lg border border-[#64ffda] rounded-xl p-6 shadow-[0_0_30px_rgba(100,255,218,0.1)] relative overflow-hidden">
+            <div className="absolute right-4 top-24 w-64 pointer-events-auto cursor-move">
+              <div className="bg-[#112240]/80 backdrop-blur-lg border border-[#64ffda] rounded-xl p-4 shadow-[0_0_30px_rgba(100,255,218,0.1)] relative overflow-hidden">
                 <div className="drag-handle absolute top-0 left-0 w-full h-6 flex items-center justify-center cursor-grab active:cursor-grabbing hover:bg-[#64ffda]/10 transition-colors z-20">
                   <GripHorizontal className="w-4 h-4 text-[#64ffda]/50" />
                 </div>
@@ -112,7 +112,7 @@ const OperationsPage: React.FC = () => {
               </div>
             </div>
           </Draggable>
-          <div className="absolute top-6 right-8 pointer-events-auto flex items-center gap-4">
+          <div className="absolute top-4 right-6 pointer-events-auto flex items-center gap-3">
             <button
               type="button"
               onClick={() => {
@@ -124,19 +124,19 @@ const OperationsPage: React.FC = () => {
                   setVolume(0);
                 }
               }}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#112240]/80 border border-[#64ffda]/50 text-[#ccd6f6] hover:bg-[#64ffda]/10 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#112240]/80 border border-[#64ffda]/50 text-[#ccd6f6] hover:bg-[#64ffda]/10 transition-colors text-[11px]"
             >
               {isMuted || volume <= 0 ? (
-                <VolumeX className="w-5 h-5 text-[#64ffda]" />
+                <VolumeX className="w-4 h-4 text-[#64ffda]" />
               ) : (
-                <Volume2 className="w-5 h-5 text-[#64ffda]" />
+                <Volume2 className="w-4 h-4 text-[#64ffda]" />
               )}
-              <span className="text-xs font-mono uppercase tracking-wide">
+              <span className="text-[10px] font-mono uppercase tracking-wide">
                 {isMuted || volume <= 0 ? 'Mute ativo' : 'Som ativo'}
               </span>
             </button>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-[#8892b0] font-mono uppercase">Vol</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] text-[#8892b0] font-mono uppercase">Vol</span>
               <input
                 type="range"
                 min={0}
@@ -148,7 +148,7 @@ const OperationsPage: React.FC = () => {
                   setVolume(newVolume);
                   setIsMuted(newVolume <= 0);
                 }}
-                className="w-24 h-1 cursor-pointer"
+                className="w-20 h-1 cursor-pointer"
               />
             </div>
           </div>
