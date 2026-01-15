@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cybersecurity Global Threat Monitor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#00ff41",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#020617",
+                    },
+                    fontFamily: {
+                        display: ["'JetBrains Mono'", "monospace"],
+                        mono: ["'JetBrains Mono'", "monospace"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "4px",
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        @keyframes scan {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .radar-sweep {
+            animation: scan 4s linear infinite;
+            background: conic-gradient(from 0deg, rgba(0, 255, 65, 0.4) 0deg, transparent 90deg);
+        }
+        .threat-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .grid-lines {
+            background-image: linear-gradient(to right, rgba(0, 255, 65, 0.1) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 255, 65, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .terminal-scroll::-webkit-scrollbar { width: 4px; }
+        .terminal-scroll::-webkit-scrollbar-track { background: transparent; }
+        .terminal-scroll::-webkit-scrollbar-thumb { background: #00ff41; border-radius: 2px; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-primary font-mono selection:bg-primary selection:text-black overflow-hidden h-screen flex flex-col">
+<header class="border-b border-slate-300 dark:border-primary/20 px-6 py-3 flex justify-between items-center bg-white/50 dark:bg-black/40 backdrop-blur-md z-10">
+<div class="flex items-center gap-4">
+<span class="material-icons text-primary text-3xl">security</span>
+<div>
+<h1 class="text-lg font-bold tracking-tighter uppercase">Global Threat Monitor</h1>
+<div class="flex items-center gap-2 text-[10px] opacity-70">
+<span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    SYSTEM STATUS: OPTIMAL | ENCRYPTION: ACTIVE | NODE: GN-01
+                </div>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-[10px] opacity-60">CURRENT TIME (UTC)</p>
+<p class="text-sm font-bold" id="clock">12:45:08.232</p>
+</div>
+<div class="flex gap-4">
+<button class="p-2 border border-primary/30 hover:bg-primary/10 transition-colors">
+<span class="material-icons text-sm">settings</span>
+</button>
+<button class="p-2 border border-primary/30 hover:bg-primary/10 transition-colors" onclick="document.documentElement.classList.toggle('dark')">
+<span class="material-icons text-sm">contrast</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 grid grid-cols-12 gap-4 p-4 overflow-hidden">
+<aside class="col-span-3 flex flex-col gap-4 overflow-hidden">
+<div class="flex-1 border border-slate-300 dark:border-primary/30 bg-white/50 dark:bg-black/40 rounded p-4 flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="material-icons text-xs">gpp_maybe</span> Active Threats
+                    </h2>
+<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded animate-pulse">8 LIVE</span>
+</div>
+<div class="flex-1 overflow-y-auto terminal-scroll pr-2 space-y-3">
+<div class="p-3 border-l-2 border-red-500 bg-red-500/5 dark:bg-red-500/10">
+<div class="flex justify-between text-[10px] mb-1">
+<span class="text-red-500 font-bold">CRITICAL</span>
+<span class="opacity-60">0.2s ago</span>
+</div>
+<p class="text-xs">DDoS Attack: Asia-Pacific-09</p>
+<div class="w-full bg-slate-200 dark:bg-slate-800 h-1 mt-2">
+<div class="bg-red-500 h-full w-[85%]"></div>
+</div>
+</div>
+<div class="p-3 border-l-2 border-orange-500 bg-orange-500/5 dark:bg-orange-500/10">
+<div class="flex justify-between text-[10px] mb-1">
+<span class="text-orange-500 font-bold">HIGH</span>
+<span class="opacity-60">1.4s ago</span>
+</div>
+<p class="text-xs">Unauthorized Access Attempt</p>
+<p class="text-[10px] opacity-60">Source: 192.168.4.120</p>
+</div>
+<div class="p-3 border-l-2 border-yellow-500 bg-yellow-500/5 dark:bg-yellow-500/10">
+<div class="flex justify-between text-[10px] mb-1">
+<span class="text-yellow-500 font-bold">MEDIUM</span>
+<span class="opacity-60">5.8s ago</span>
+</div>
+<p class="text-xs">SQL Injection Blocked</p>
+</div>
+<div class="p-3 border-l-2 border-primary/50 bg-primary/5">
+<div class="flex justify-between text-[10px] mb-1">
+<span class="text-primary font-bold">LOW</span>
+<span class="opacity-60">12.1s ago</span>
+</div>
+<p class="text-xs">Port Scan Detected</p>
+</div>
+<div class="p-3 border-l-2 border-primary/50 bg-primary/5">
+<div class="flex justify-between text-[10px] mb-1">
+<span class="text-primary font-bold">LOW</span>
+<span class="opacity-60">24.5s ago</span>
+</div>
+<p class="text-xs">Abnormal Traffic Spike</p>
+</div>
+</div>
+</div>
+<div class="h-48 border border-slate-300 dark:border-primary/30 bg-white/50 dark:bg-black/40 rounded p-4">
+<h2 class="text-xs font-bold uppercase mb-4 tracking-widest">System Load</h2>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[10px] mb-1"><span>CPU CLUSTER A</span><span>42%</span></div>
+<div class="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[42%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] mb-1"><span>MEMORY UTIL</span><span>68%</span></div>
+<div class="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[68%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] mb-1"><span>NETWORK IO</span><span>12 Gbps</span></div>
+<div class="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[15%]"></div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<section class="col-span-6 border border-slate-300 dark:border-primary/30 bg-slate-100 dark:bg-black/20 rounded relative grid-lines overflow-hidden flex items-center justify-center">
+<div class="relative w-[500px] h-[500px]">
+<div class="absolute inset-0 border border-primary/20 rounded-full"></div>
+<div class="absolute inset-[10%] border border-primary/20 rounded-full"></div>
+<div class="absolute inset-[25%] border border-primary/20 rounded-full"></div>
+<div class="absolute inset-[40%] border border-primary/20 rounded-full"></div>
+<div class="absolute top-1/2 left-0 w-full h-[1px] bg-primary/10"></div>
+<div class="absolute left-1/2 top-0 h-full w-[1px] bg-primary/10"></div>
+<img alt="World Map Silhouette" class="absolute inset-0 w-full h-full object-contain opacity-20 invert dark:invert-0 brightness-50 contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDMtQgb-LeiDKXoxe5gV1qnzUEeg7LY9FMP71k7ALp-h1gvYZV4zzFivwY8TgS4IdIm2KkA10JvdUtc8RbkaRLO51VFXiV5AR5ZvUl-T-SBTGLjVgchST41lC_0RVHrVV9NDPL3no21kcZM8M7DS4g_0v60_45Fsx5r7nbd2a_gRyfXxNp6U0CLh2IiWYdnJZNPq76MKnbc6sTgcJbFOPk3qBeZ8Ko2CmmffTjktcXQM2CGDIKoZ-5qhztqK4PhdYgUl-S14Uh_r--zAB"/>
+<div class="absolute top-1/2 left-1/2 w-full h-full -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+<div class="radar-sweep absolute top-0 left-0 w-full h-full rounded-full origin-center"></div>
+</div>
+<div class="absolute top-[30%] left-[25%] group cursor-crosshair">
+<div class="w-3 h-3 bg-red-500 rounded-full threat-pulse"></div>
+<div class="absolute top-4 left-4 whitespace-nowrap bg-red-500 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        ID: 404-X | IP: 14.52.XX.XX
+                    </div>
+</div>
+<div class="absolute top-[45%] left-[55%] group cursor-crosshair">
+<div class="w-2 h-2 bg-primary rounded-full threat-pulse"></div>
+</div>
+<div class="absolute top-[65%] left-[40%] group cursor-crosshair">
+<div class="w-2 h-2 bg-yellow-500 rounded-full threat-pulse"></div>
+</div>
+<div class="absolute top-[20%] left-[70%] group cursor-crosshair">
+<div class="w-3 h-3 bg-red-500 rounded-full threat-pulse"></div>
+</div>
+<div class="absolute top-[75%] left-[80%] group cursor-crosshair">
+<div class="w-2 h-2 bg-primary rounded-full threat-pulse"></div>
+</div>
+</div>
+<div class="absolute top-4 left-4 pointer-events-none">
+<div class="text-[10px] border-l-2 border-primary pl-2 py-1">
+<p>SCAN RADIUS: 12,400 KM</p>
+<p>PRECISION: HIGH</p>
+<p>LAST SWEEP: 0.1s</p>
+</div>
+</div>
+<div class="absolute bottom-4 right-4 pointer-events-none text-right">
+<div class="text-[10px] border-r-2 border-primary pr-2 py-1">
+<p>LAT: 35.6895° N</p>
+<p>LON: 139.6917° E</p>
+<p>LOCATION: TOKYO NODE</p>
+</div>
+</div>
+</section>
+<aside class="col-span-3 flex flex-col gap-4 overflow-hidden">
+<div class="h-64 border border-slate-300 dark:border-primary/30 bg-white/50 dark:bg-black/40 rounded p-4 flex flex-col">
+<h2 class="text-xs font-bold uppercase mb-4 tracking-widest flex items-center gap-2">
+<span class="material-icons text-xs">analytics</span> Network Throughput
+                </h2>
+<div class="flex-1 relative flex items-end gap-1">
+<div class="flex-1 flex items-end gap-1 h-full">
+<div class="bg-primary/20 w-full h-[40%]"></div>
+<div class="bg-primary/40 w-full h-[60%]"></div>
+<div class="bg-primary/20 w-full h-[55%]"></div>
+<div class="bg-primary/60 w-full h-[85%]"></div>
+<div class="bg-primary/30 w-full h-[45%]"></div>
+<div class="bg-primary/50 w-full h-[70%]"></div>
+<div class="bg-red-500/50 w-full h-[95%]"></div>
+<div class="bg-primary/40 w-full h-[60%]"></div>
+<div class="bg-primary/30 w-full h-[40%]"></div>
+<div class="bg-primary/50 w-full h-[65%]"></div>
+</div>
+</div>
+<div class="flex justify-between mt-2 text-[10px] opacity-60">
+<span>-10 MIN</span>
+<span>-5 MIN</span>
+<span>NOW</span>
+</div>
+</div>
+<div class="flex-1 border border-slate-300 dark:border-primary/30 bg-white/50 dark:bg-black/40 rounded p-4 flex flex-col overflow-hidden">
+<h2 class="text-xs font-bold uppercase mb-4 tracking-widest flex items-center gap-2">
+<span class="material-icons text-xs">history_edu</span> Recent Activity
+                </h2>
+<div class="flex-1 overflow-y-auto terminal-scroll text-[10px] space-y-2 opacity-80">
+<div class="flex gap-2">
+<span class="text-primary">[12:44:55]</span>
+<span>Node Sydney ping response: 45ms</span>
+</div>
+<div class="flex gap-2 text-yellow-500">
+<span>[12:44:52]</span>
+<span>Auth challenge issued: root_user_01</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary">[12:44:48]</span>
+<span>Firewall rules updated - Rev 4.1</span>
+</div>
+<div class="flex gap-2 text-red-500">
+<span>[12:44:45]</span>
+<span>CRITICAL: Overflow detected in buffer_09</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary">[12:44:30]</span>
+<span>Satellite uplink sync completed</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary">[12:44:28]</span>
+<span>Scanning for open proxies...</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary">[12:44:25]</span>
+<span>Packet inspection: 1.2M records</span>
+</div>
+<div class="flex gap-2 text-orange-400">
+<span>[12:44:20]</span>
+<span>WARNING: High entropy in traffic stream</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary">[12:44:15]</span>
+<span>Database maintenance routine start</span>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<footer class="bg-primary text-black px-6 py-1.5 flex justify-between items-center text-[10px] font-bold">
+<div class="flex gap-6">
+<span>PACKETS IN: 4.8M/s</span>
+<span>PACKETS OUT: 2.1M/s</span>
+<span>THREAT SCORE: 4.2 (STABLE)</span>
+</div>
+<div class="flex gap-6">
+<span>UPTIME: 342:12:05</span>
+<span class="flex items-center gap-1">
+<span class="material-icons text-[12px]">language</span>
+                CONNECTED NODES: 84
+            </span>
+</div>
+</footer>
+<script>
+        // Update clock simulation
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getUTCHours()).padStart(2, '0');
+            const m = String(now.getUTCMinutes()).padStart(2, '0');
+            const s = String(now.getUTCSeconds()).padStart(2, '0');
+            const ms = String(now.getUTCMilliseconds()).padStart(3, '0');
+            document.getElementById('clock').innerText = `${h}:${m}:${s}.${ms}`;
+        }
+        setInterval(updateClock, 30);
+    </script>
+
+</body></html>

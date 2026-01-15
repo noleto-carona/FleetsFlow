@@ -19,6 +19,11 @@ Este arquivo registra alterações importantes, criações e decisões tomadas d
 
 ### Decisões e Discussões
 - **Estratégia Mobile**: Confirmado que para um aplicativo instalável nativo, será necessário criar as telas do zero na pasta `mobile` (usando React Native), pois a estrutura visual (DOM/HTML) do frontend web não é diretamente compatível. A lógica de negócio, no entanto, será reaproveitada.
+- **RadarMap e Áudio**: Melhorado o componente `RadarMap` com camada visual de mapa interno e destaque dinâmico dos navios quando o feixe do radar passa por eles. Adicionado áudio de ping sincronizado com a detecção e som ambiente oceânico, com controle de mute global na página de operações.
+- **Assets de Mapa e Áudio**:
+  - Verificada a pasta `src/audio`: contém os arquivos necessários. O arquivo `indian-ocean-sound.mp3` tem ~5MB, o que requer atenção, mas é aceitável para MVP.
+  - O usuário foi instruído a baixar a imagem de fundo do radar (`radar-map.png`) para a pasta `frontend/public`, já que o download automático via script falhou devido a proteções de URL.
+  - Links de imagens compatíveis foram fornecidos.
 
 ### Notas
 - O usuário solicitou a criação deste arquivo para manter um histórico persistente das atividades.

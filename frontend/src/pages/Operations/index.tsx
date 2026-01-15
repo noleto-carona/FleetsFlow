@@ -1,24 +1,45 @@
-import React from 'react';
-// react-draggable is not installed; replacing with a simple wrapper
-const Draggable: React.FC<{ bounds: string; handle: string; children: React.ReactNode }> = ({ children }) => <>{children}</>;
+import React, { useEffect, useRef, useState } from 'react';
+import Draggable from 'react-draggable';
 import RadarMap from '../../components/RadarMap';
 import MainLayout from '../../layouts/MainLayout';
-import { AlertTriangle, Activity, Navigation, Anchor, GripHorizontal } from 'lucide-react';
+import { AlertTriangle, Activity, Navigation, Anchor, GripHorizontal, Volume2, VolumeX } from 'lucide-react';
+import oceanAmbience from '../../audio/indian-ocean-sound.mp3';
+
+const DEFAULT_VOLUME = 0.15;
 
 const OperationsPage: React.FC = () => {
+  const [isMuted, setIsMuted] = useState(true);
+  const [volume, setVolume] = useState(0);
+  const backgroundAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audio = backgroundAudioRef.current;
+    if (!audio) return;
+
+    const shouldMute = isMuted || volume <= 0;
+
+    if (shouldMute) {
+      audio.muted = true;
+      audio.pause();
+      return;
+    }
+
+    audio.muted = false;
+    audio.volume = volume;
+    audio.loop = true;
+    audio.play().catch(() => {});
+  }, [isMuted, volume]);
+
   return (
     <MainLayout>
       <div className="relative w-full h-screen bg-[#0a192f] overflow-hidden">
         
-        {/* Camada de Fundo: Radar Map */}
         <div className="absolute inset-0 z-0">
-          <RadarMap />
+          <RadarMap volume={isMuted ? 0 : volume} />
         </div>
 
-        {/* Camada de HUD (Heads-Up Display) */}
         <div className="relative z-10 w-full h-full pointer-events-none p-6">
           
-          {/* Top Alert Bar */}
           <div className="absolute top-6 left-1/2 -translate-x-1/2 w-auto max-w-2xl animate-pulse pointer-events-auto">
             <div className="bg-red-500/20 backdrop-blur-md border border-red-500/50 text-red-100 px-6 py-3 rounded-full flex items-center gap-3 shadow-[0_0_20px_rgba(239,68,68,0.3)]">
               <AlertTriangle className="w-5 h-5 text-red-400" />
@@ -28,16 +49,13 @@ const OperationsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Floating Panel (Telemetry) - Draggable */}
           <Draggable bounds="parent" handle=".drag-handle">
             <div className="absolute right-8 top-24 w-80 pointer-events-auto cursor-move">
               <div className="bg-[#112240]/80 backdrop-blur-lg border border-[#64ffda] rounded-xl p-6 shadow-[0_0_30px_rgba(100,255,218,0.1)] relative overflow-hidden">
-                {/* Drag Handle Indicator */}
                 <div className="drag-handle absolute top-0 left-0 w-full h-6 flex items-center justify-center cursor-grab active:cursor-grabbing hover:bg-[#64ffda]/10 transition-colors z-20">
                   <GripHorizontal className="w-4 h-4 text-[#64ffda]/50" />
                 </div>
 
-                {/* Corner Accents */}
                 <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-[#64ffda]" />
                 <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-[#64ffda]" />
                 <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-[#64ffda]" />
@@ -48,7 +66,6 @@ const OperationsPage: React.FC = () => {
                 </h3>
 
                 <div className="space-y-6 select-none">
-                  {/* Speed */}
                   <div className="flex items-center justify-between group">
                     <div className="flex items-center gap-3 text-[#8892b0]">
                       <Activity className="w-4 h-4 text-[#64ffda]" />
@@ -60,7 +77,6 @@ const OperationsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Heading */}
                   <div className="flex items-center justify-between group">
                     <div className="flex items-center gap-3 text-[#8892b0]">
                       <Navigation className="w-4 h-4 text-[#64ffda]" />
@@ -72,7 +88,6 @@ const OperationsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Distance */}
                   <div className="flex items-center justify-between group">
                     <div className="flex items-center gap-3 text-[#8892b0]">
                       <Anchor className="w-4 h-4 text-[#64ffda]" />
@@ -84,7 +99,6 @@ const OperationsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Mini Graph (Sparkline simulation) */}
                   <div className="pt-4 mt-4 border-t border-[#233554]">
                     <svg className="w-full h-12 stroke-[#64ffda] fill-none stroke-2" viewBox="0 0 100 20">
                       <path d="M0 10 Q 10 5, 20 10 T 40 10 T 60 15 T 80 5 T 100 10" />
@@ -98,6 +112,48 @@ const OperationsPage: React.FC = () => {
               </div>
             </div>
           </Draggable>
+          <div className="absolute top-6 right-8 pointer-events-auto flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => {
+                if (isMuted || volume <= 0) {
+                  setIsMuted(false);
+                  setVolume(prev => (prev <= 0 ? DEFAULT_VOLUME : prev));
+                } else {
+                  setIsMuted(true);
+                  setVolume(0);
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#112240]/80 border border-[#64ffda]/50 text-[#ccd6f6] hover:bg-[#64ffda]/10 transition-colors"
+            >
+              {isMuted || volume <= 0 ? (
+                <VolumeX className="w-5 h-5 text-[#64ffda]" />
+              ) : (
+                <Volume2 className="w-5 h-5 text-[#64ffda]" />
+              )}
+              <span className="text-xs font-mono uppercase tracking-wide">
+                {isMuted || volume <= 0 ? 'Mute ativo' : 'Som ativo'}
+              </span>
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-[#8892b0] font-mono uppercase">Vol</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={volume}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  const newVolume = Number(event.target.value);
+                  setVolume(newVolume);
+                  setIsMuted(newVolume <= 0);
+                }}
+                className="w-24 h-1 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          <audio ref={backgroundAudioRef} src={oceanAmbience} preload="auto" />
 
         </div>
       </div>
