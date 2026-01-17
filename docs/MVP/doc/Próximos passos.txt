@@ -13,7 +13,7 @@ ________________________________________
      - Listar documentos por empresa, embarcação e tripulante.
      - Criar/atualizar status ( PENDENTE , VALIDADO , etc.).
    - Usando Documento , ComplianceDocumento , Tripulante , TripulanteDocumento .
-3. Backend – Marketplace (Demanda Spot)
+~~3. Backend – Marketplace (Demanda Spot)~~
    
    - Endpoints para:
      - Criar nova DemandaSpot .

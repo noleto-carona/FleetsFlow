@@ -81,3 +81,17 @@
     - `PATCH /api/pagamentos/:id/status`: atualiza o `status` do pagamento (`PENDENTE`, `RESERVADO`, `LIBERADO`, `CANCELADO`).
 - **Build**:
   - `npm run build` no backend executado com sucesso após inclusão desses módulos e DTOs.
+
+### [2026-01-17] Backend - Marketplace (Demanda Spot)
+- **Implementação do Item 3 (Backend)**:
+  - Criado `DemandaSpotModule` (`backend/src/modules/demanda-spot`) com:
+    - **Service**: 
+      - `create`: Cria `DemandaSpot` validando existência do `contratante` (Perfil).
+      - `findAll`: Lista demandas com status `ABERTA`, incluindo dados do contratante (razaoSocial, reputacao).
+    - **Controller**:
+      - `POST /api/demanda-spot`: Endpoint para criação.
+      - `GET /api/demanda-spot`: Endpoint para listagem.
+    - **DTO**: `CreateDemandaSpotDto` com validação de campos obrigatórios (`contratanteId`, `tipoServico`, `dataInicio`, `dataFim`).
+  - Registrado `DemandaSpotModule` no `AppModule`.
+- **Documentação**:
+  - Item 3 marcado como concluído (tachado) em `docs/MVP/doc/Próximos passos.txt`.
