@@ -6,7 +6,8 @@ Este arquivo registra os principais ajustes (já aplicados ou planejados) no `sc
 
 - ~~Tripulação e documentos de tripulação mapeados no `schema.prisma` e já migrados para o PostgreSQL~~
 - ~~Chat seguro de negociação (thread + mensagens) mapeado no `schema.prisma` e já migrado para o PostgreSQL~~
-- Itens de chave operacional histórica e eventos estruturados de operação/geofencing ainda pendentes de implementação
+- ~~Chave operacional histórica (modelo `ChaveOperacional`) criada no `schema.prisma` e migrada~~
+- ~~Eventos estruturados de operação (modelo `OperacaoEvento`) criados no `schema.prisma` e migrados~~
 
 ### 1. Tripulação e documentos de tripulação
 

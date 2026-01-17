@@ -51,7 +51,7 @@
 - **Estrutura base do backend criada**:
   - Adicionada pasta `backend/src` com:
     - `main.ts`: inicialização do NestJS com prefixo global `/api` e `ValidationPipe` global.
-    - `app.module.ts`: módulo raiz importando `PrismaModule` e `EmpresaModule`.
+    - `app.module.ts`: módulo raiz importando `PrismaModule`, `EmpresaModule`, `ContratoModule`, `OperacaoModule` e `PagamentoModule`.
   - Criado `PrismaModule` e `PrismaService` em `backend/src/prisma` para conectar ao PostgreSQL via Prisma.
 - **Módulo de Empresa para onboarding**:
   - Criado `EmpresaModule` em `backend/src/modules/empresa` com serviço e controller.
@@ -60,3 +60,24 @@
   - Endpoint `GET /api/empresa/:id` retorna empresa e perfis relacionados.
 - **Verificação**:
   - Comando `npm run build` no backend executado com sucesso após criação da estrutura.
+
+### [2026-01-17] Modelos avançados e fluxo básico de Contrato/Operação/Pagamento
+- **Prisma / Banco**:
+  - Adicionados modelos `ChaveOperacional` e `OperacaoEvento` ao `schema.prisma`, com relações:
+    - `Perfil` → `chavesOperacionais`
+    - `Operacao` → `eventos`.
+  - Rodada migration `add_chave_operacional_operacao_evento`, sincronizando o PostgreSQL com esses novos modelos.
+- **Backend – Contrato**:
+  - Criado `ContratoModule` com endpoint `POST /api/contratos/from-match` que:
+    - Valida `matchId` e `valor`.
+    - Busca o `Match` e gera um `Contrato` com `hashChave` derivado de dados do match (hash SHA-256 simples).
+- **Backend – Operação**:
+  - Criado `OperacaoModule` com:
+    - `POST /api/operacoes`: cria `Operacao` a partir de um `contratoId`, ligando automaticamente à `embarcacao` do match.
+    - `PATCH /api/operacoes/:id`: atualiza status e datas reais (`dataInicioReal`, `dataFimReal`).
+- **Backend – Pagamento**:
+  - Criado `PagamentoModule` com:
+    - `POST /api/pagamentos`: cria registro de `Pagamento` para um contrato, em modo escrow simulado.
+    - `PATCH /api/pagamentos/:id/status`: atualiza o `status` do pagamento (`PENDENTE`, `RESERVADO`, `LIBERADO`, `CANCELADO`).
+- **Build**:
+  - `npm run build` no backend executado com sucesso após inclusão desses módulos e DTOs.

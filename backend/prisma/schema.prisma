@@ -49,6 +49,7 @@ model Perfil {
   embarcacoes       Embarcacao[]
   complianceDocs    ComplianceDocumento[]
   mensagensEnviadas ChatMensagem[]
+  chavesOperacionais ChaveOperacional[]
   
   // Relações do Marketplace e Reputação
   demandasCriadas   DemandaSpot[] @relation("DemandasCriadas")
@@ -315,6 +316,7 @@ model Operacao {
   
   contrato        Contrato  @relation(fields: [contratoId], references: [id])
   embarcacao      Embarcacao @relation(fields: [embarcacaoId], references: [id])
+  eventos         OperacaoEvento[]
   
   @@map("operacoes")
 }
@@ -360,4 +362,42 @@ model Reputacao {
   perfil          Perfil    @relation(fields: [perfilId], references: [id])
   
   @@map("reputacao")
+}
+
+model ChaveOperacional {
+  id              Int                     @id @default(autoincrement())
+  perfilId        Int                     @map("perfil_id")
+  valor           String
+  hash            String                  @map("hash")
+  status          ChaveOperacionalStatus  @default(ATIVA)
+  emitidaEm       DateTime                @default(now()) @map("emitida_em")
+  expiraEm        DateTime?               @map("expira_em")
+  revogadaEm      DateTime?               @map("revogada_em")
+  motivoRevogacao String?                 @map("motivo_revogacao")
+
+  perfil          Perfil                  @relation(fields: [perfilId], references: [id])
+
+  @@map("chaves_operacionais")
+  @@index([perfilId])
+  @@index([status])
+}
+
+enum ChaveOperacionalStatus {
+  ATIVA
+  REVOGADA
+  EXPIRADA
+}
+
+model OperacaoEvento {
+  id         Int      @id @default(autoincrement())
+  operacaoId Int      @map("operacao_id")
+  tipo       String
+  payload    Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  operacao   Operacao @relation(fields: [operacaoId], references: [id])
+
+  @@map("operacao_eventos")
+  @@index([operacaoId])
+  @@index([tipo])
 }

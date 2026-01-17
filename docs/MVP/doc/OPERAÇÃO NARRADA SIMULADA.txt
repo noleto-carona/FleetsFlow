@@ -216,7 +216,9 @@ STATUS DE IMPLEMENTAÇÃO (MVP ATUAL – VISÃO ALTA)
 - ~~Modelagem de dados central (Empresa, Perfil, Embarcação, Demanda Spot, Match, Contrato, Operação, Pagamento, Reputação) representada no `schema.prisma` e já migrada para o PostgreSQL~~
 - ~~Tripulação e documentos de tripulação (Tripulante, TripulanteDocumento) representados no `schema.prisma` e já migrados~~
 - ~~Chat seguro vinculado ao Match (ChatThread, ChatMensagem) representado no `schema.prisma` e já migrado~~
+- ~~Histórico de chaves operacionais (ChaveOperacional) representado no `schema.prisma` e já migrado~~
+- ~~Eventos estruturados de operação (OperacaoEvento) representados no `schema.prisma` e já migrados~~
 - Onboarding completo de UX (wizard de cadastro, telas finas) ainda em implementação
-- Integração operacional em tempo real (AIS, geofencing, eventos estruturados) ainda em implementação
+- Integração operacional em tempo real (AIS, geofencing, eventos em tempo real) ainda em implementação
 - Fluxo financeiro real de escrow (integração com meio de pagamento) ainda em implementação
 

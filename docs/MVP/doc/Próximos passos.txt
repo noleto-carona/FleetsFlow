@@ -1,11 +1,12 @@
 Próximos passos sugeridos (numerados)
 
-1. Backend – Cadastro Empresa/Perfil (Onboarding mínimo)
+~~1. Backend – Cadastro Empresa/Perfil (Onboarding mínimo)~~
    
    - Criar endpoints para:
      - Criar empresa + perfil (dados básicos + aceite LGPD).
      - Buscar dados da empresa logada.
    - Já usando o schema.prisma atual ( Empresa , Perfil ).
+________________________________________
 2. Backend – Compliance (Empresa / Embarcação / Tripulação)
    
    - Endpoints para:
@@ -30,7 +31,7 @@ Próximos passos sugeridos (numerados)
      - Abrir ChatThread a partir de um Match .
      - Enviar/ler mensagens ( ChatMensagem ) por thread.
    - Já usando os modelos novos.
-6. Backend – Contrato + Operação + Pagamento (fluxo básico)
+~~6. Backend – Contrato + Operação + Pagamento (fluxo básico)~~
    
    - Endpoints para:
      - Gerar contrato a partir de um match (sem integração com assinatura ainda).
@@ -59,7 +60,7 @@ Próximos passos sugeridos (numerados)
       - Lista mensagens do ChatThread .
       - Caixa de envio de nova mensagem.
     - Conecta com backend do item 5.
-11. Infra / Modelo Futuro – Chave Operacional Histórica + Eventos de Operação
+~~11. Infra / Modelo Futuro – Chave Operacional Histórica + Eventos de Operação~~
     
     - Ajustar schema.prisma para:
       - Adicionar modelo ChaveOperacional (histórico).
