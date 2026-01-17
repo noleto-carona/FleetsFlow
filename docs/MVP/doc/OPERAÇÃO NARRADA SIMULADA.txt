@@ -1,0 +1,222 @@
+A seguir está a simulação narrada completa, contínua e sem redundâncias do uso do Fleet Flow, construída integralmente a partir dos arquivos anexados (Memorial Descritivo, Manual de Validação Antecipada, UX/UI, Diagrama de Banco de Dados e Lista de Documentos), com foco em visualização prática, realista e operacional, desde o primeiro cadastro até o encerramento financeiro e operacional da operação spot (“Uber dos Mares”).
+________________________________________
+SIMULAÇÃO NARRADA – USO COMPLETO DO FLEETS FLOW
+(do cadastro ao pagamento, com contrato, chave, geofencing e pós-operação)
+________________________________________
+1. Entrada na Plataforma e Criação de Conta
+Um gerente de uma PME de apoio marítimo acessa o Fleet Flow pela web ou app mobile.
+Na tela inicial, escolhe “Registrar Empresa”.
+Ele cria o login institucional e aceita os termos LGPD. Nesse momento, o sistema já cria um ID interno da empresa, que será o vínculo primário entre usuário, empresa, embarcações, documentos, contratos e pagamentos (conforme o diagrama de banco de dados).
+________________________________________
+2. Onboarding Guiado – Cadastro da Empresa (PJ)
+O onboarding ocorre em wizard progressivo, evitando sobrecarga.
+O usuário informa:
+•	Razão social
+•	CNPJ
+•	Nome fantasia
+•	Endereço
+•	Contatos
+•	Responsável legal
+•	Certificado digital ICP-Brasil A3 (upload ou integração)
+Ao salvar, o Fleet Flow:
+•	Consulta automaticamente bases públicas (Receita Federal, CNPJ)
+•	Cria o perfil jurídico-base da PME
+•	Habilita o acesso ao Módulo de Compliance Antecipado
+Esse cadastro ainda não permite operar — ele apenas cria a identidade legal da PME no ecossistema 
+MEMORIAL DESCRITIVO - FLEETS FL…
+.
+________________________________________
+3. Upload e Validação Antecipada de Documentos (Coração do Sistema)
+A PME entra no módulo Compliance Antecipado.
+3.1 Upload em Lote
+O usuário faz upload de:
+•	Documentos da empresa
+•	Documentos das embarcações
+•	Documentos da tripulação
+Pode enviar PDFs ou ZIPs únicos. A IA do Fleet Flow:
+•	Lê os arquivos (OCR)
+•	Extrai dados
+•	Classifica por tipo documental
+•	Associa cada documento ao registro correto (empresa, navio ou tripulante)
+3.2 Validação Híbrida
+O sistema executa:
+•	Validação automática (APIs oficiais quando disponíveis)
+•	Validação por IA
+•	Revisão humana quando necessário (SLA < 4h)
+Cada documento recebe:
+•	Status válido / pendente / inválido
+•	Data de vencimento
+•	Impacto na habilitação operacional
+3.3 Geração da Chave Operacional
+Ao atingir ≥70% de conformidade mínima, o Fleet Flow gera uma:
+🔑 CHAVE AMARELA ÚNICA
+Essa chave:
+•	Identifica aquela PME de forma auditável
+•	Vincula empresa + frota + compliance
+•	Autoriza a PME a receber chamadas spot
+•	É registrada com hash criptográfico e timestamp
+Sem essa chave, a PME não aparece no marketplace 
+Manual Explicativo ACERCA DOS D…
+.
+________________________________________
+4. Cadastro das Embarcações
+A PME cadastra cada embarcação individualmente:
+•	Tipo (PSV, AHTS, rebocador, barcaça etc.)
+•	IMO
+•	Capacidade técnica (DWT, HP, DP, guindaste)
+•	Certificados de classe, segurança, ambientais
+•	Seguros
+Cada embarcação recebe:
+•	Um ID próprio
+•	Vínculo direto com a chave da PME
+•	Score técnico-operacional
+A frota passa a ser consultável pelo marketplace, mas sem exibição de preço 
+UX - UI - FLEETS FLOW 2026 TESTE
+.
+________________________________________
+5. Entrada de um Grande Armador – Abertura de Demanda Spot
+Um grande armador (ou operador portuário/offshore) acessa o Fleet Flow.
+Ele seleciona “Nova Demanda Spot” e preenche:
+•	Tipo de serviço
+•	Localização (geográfica)
+•	Janela de tempo
+•	Requisitos técnicos
+•	Requisitos regulatórios
+Ao confirmar, o sistema:
+•	Analisa os requisitos
+•	Cruza com as PMEs habilitadas
+•	Seleciona somente PMEs com chave válida compatível
+________________________________________
+6. “Uber dos Mares” – Acionamento Spot
+A demanda é disparada anonimamente para as PMEs compatíveis.
+As PMEs veem:
+•	Tipo de operação
+•	Local aproximado
+•	Janela
+•	Requisitos técnicos
+🚫 Preço oculto nesta fase	
+🚫 Identidade do contratante oculta
+Isso elimina leilão predatório e risco jurídico.
+________________________________________
+7. Aceite do Chamado
+Uma PME aceita a chamada.
+No momento do aceite:
+•	O sistema revela o preço
+•	Revela o contratante
+•	Bloqueia a embarcação para conflito de agenda
+•	Registra o aceite com:
+o	ID da PME
+o	ID da embarcação
+o	Hash da chave operacional
+Esse evento é imutável e auditável.
+________________________________________
+8. Chat Seguro de Negociação
+Após o aceite, abre-se o chat criptografado.
+As partes podem:
+•	Ajustar detalhes operacionais
+•	Anexar documentos complementares
+•	Definir cláusulas específicas (prazo, escopo)
+Tudo fica registrado no histórico contratual e pode ser incorporado ao contrato final 
+UX - UI - FLEETS FLOW 2026 TESTE
+.
+________________________________________
+9. Fechamento Automático e Geração do Contrato
+Quando ambas confirmam:
+•	O Fleet Flow gera automaticamente o contrato padrão (Carta-Frete / Instrumento de Subcontratação)
+O contrato é:
+•	Pré-preenchido
+•	Vinculado à operação específica
+•	Vinculado à chave da PME
+•	Vinculado à embarcação
+•	Vinculado à demanda
+________________________________________
+10. Assinatura Eletrônica com Chave Vinculada
+As partes assinam via:
+•	Certificado ICP-Brasil
+⚠️ Ponto-chave do sistema	
+A assinatura:
+•	Incorpora o hash da chave operacional
+•	Amarra juridicamente que:
+“Esta PME estava validada e habilitada no momento da contratação”
+Isso protege:
+•	O grande armador
+•	A PME
+•	A plataforma
+O contrato passa a ter valor probatório pleno.
+________________________________________
+11. Ativação da Operação e Geofencing
+Após assinatura:
+•	A operação entra em status “Ativa”
+•	O módulo operacional é iniciado
+O Fleet Flow passa a:
+•	Monitorar a embarcação por AIS
+•	Criar cercas geográficas (geofencing)
+Alertas automáticos:
+•	Aproximação da área
+•	Entrada em zona sensível
+•	Atrasos
+•	Desvios de rota
+•	Entrada e saída da operação
+Tudo em tempo real 
+UX - UI - FLEETS FLOW 2026 TESTE
+.
+________________________________________
+12. Ambiente de Pagamento (Escrow Operacional)
+O valor do contrato:
+•	É alocado em ambiente de escrow
+•	Fica protegido até a conclusão
+Marcos de liberação:
+•	Início confirmado
+•	Operação concluída
+•	Aceite final do contratante
+Isso elimina:
+•	Inadimplência
+•	Discussão pós-operação
+•	Risco financeiro para a PME
+________________________________________
+13. Encerramento da Operação
+Ao final:
+•	A PME envia o relatório pós-operação
+•	O contratante confirma execução
+O Fleet Flow:
+•	Libera o pagamento
+•	Registra a operação no histórico da PME
+•	Atualiza o score operacional
+•	Atualiza métricas ESG (quando aplicável)
+________________________________________
+14. Pós-Operação, Auditoria e Manutenção
+A operação fica registrada com:
+•	Contrato
+•	Assinaturas
+•	Chat
+•	Geofencing
+•	Logs
+•	Relatórios
+•	Pagamento
+Auditores, órgãos reguladores ou partes podem:
+•	Validar tudo por rastreabilidade
+•	Conferir a chave ativa no momento do contrato
+A PME continua recebendo alertas de:
+•	Documentos a vencer
+•	Risco de perda de chave
+•	Manutenção da habilitação
+________________________________________
+CONCLUSÃO OPERACIONAL
+Essa simulação mostra que o Fleet Flow não é apenas um marketplace, mas um sistema completo de confiança operacional, onde:
+•	📄 Documentação vira chave auditável
+•	🚢 Frota vira ativo acionável
+•	⚖️ Contratos nascem juridicamente blindados
+•	🧭 Operações são monitoradas em tempo real
+•	💰 Pagamentos são protegidos
+•	🔍 Risco regulatório é drasticamente reduzido
+
+________________________________________
+STATUS DE IMPLEMENTAÇÃO (MVP ATUAL – VISÃO ALTA)
+
+- ~~Modelagem de dados central (Empresa, Perfil, Embarcação, Demanda Spot, Match, Contrato, Operação, Pagamento, Reputação) representada no `schema.prisma` e já migrada para o PostgreSQL~~
+- ~~Tripulação e documentos de tripulação (Tripulante, TripulanteDocumento) representados no `schema.prisma` e já migrados~~
+- ~~Chat seguro vinculado ao Match (ChatThread, ChatMensagem) representado no `schema.prisma` e já migrado~~
+- Onboarding completo de UX (wizard de cadastro, telas finas) ainda em implementação
+- Integração operacional em tempo real (AIS, geofencing, eventos estruturados) ainda em implementação
+- Fluxo financeiro real de escrow (integração com meio de pagamento) ainda em implementação
+

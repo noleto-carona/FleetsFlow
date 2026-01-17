@@ -29,6 +29,7 @@ model Empresa {
   
   perfis Perfil[]
   documentos Documento[]
+  tripulantes Tripulante[]
   
   @@map("empresas")
 }
@@ -47,6 +48,7 @@ model Perfil {
   empresa           Empresa   @relation(fields: [empresaId], references: [id])
   embarcacoes       Embarcacao[]
   complianceDocs    ComplianceDocumento[]
+  mensagensEnviadas ChatMensagem[]
   
   // Relações do Marketplace e Reputação
   demandasCriadas   DemandaSpot[] @relation("DemandasCriadas")
@@ -115,6 +117,23 @@ model Certificado {
   @@index([dataValidade])
 }
 
+model Tripulante {
+  id                   Int       @id @default(autoincrement())
+  empresaId            Int       @map("empresa_id")
+  nome                 String
+  cpf                  String    @unique
+  funcao               String?
+  registroProfissional String?   @map("registro_profissional")
+  ativo                Boolean   @default(true)
+  createdAt            DateTime  @default(now()) @map("created_at")
+  
+  empresa              Empresa   @relation(fields: [empresaId], references: [id])
+  documentos           TripulanteDocumento[]
+  
+  @@map("tripulantes")
+  @@index([empresaId])
+}
+
 model ComplianceDocumento {
   id          Int       @id @default(autoincrement())
   perfilId    Int       @map("perfil_id")
@@ -130,6 +149,24 @@ model ComplianceDocumento {
   
   @@map("compliance_documentos")
   @@index([perfilId])
+  @@index([status])
+}
+
+model TripulanteDocumento {
+  id            Int       @id @default(autoincrement())
+  tripulanteId  Int       @map("tripulante_id")
+  tipo          String
+  arquivoUrl    String    @map("arquivo_url")
+  status        DocStatus @default(PENDENTE)
+  dataValidade  DateTime? @map("data_validade")
+  observacao    String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  validadoEm    DateTime? @map("validado_em")
+  
+  tripulante    Tripulante @relation(fields: [tripulanteId], references: [id])
+  
+  @@map("tripulante_documentos")
+  @@index([tripulanteId])
   @@index([status])
 }
 
@@ -195,6 +232,7 @@ model Match {
   pme             Perfil      @relation("MatchPme", fields: [pmeId], references: [id])
   embarcacao      Embarcacao  @relation(fields: [embarcacaoId], references: [id])
   contrato        Contrato?
+  chatThread      ChatThread?
   
   @@map("matches")
   @@unique([demandaId, pmeId, embarcacaoId])
@@ -207,6 +245,33 @@ enum MatchStatus {
   ACEITO
   RECUSADO
   EXPIRADO
+}
+
+model ChatThread {
+  id         Int       @id @default(autoincrement())
+  matchId    Int       @unique @map("match_id")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  
+  match      Match     @relation(fields: [matchId], references: [id])
+  mensagens  ChatMensagem[]
+  
+  @@map("chat_threads")
+}
+
+model ChatMensagem {
+  id            Int       @id @default(autoincrement())
+  threadId      Int       @map("thread_id")
+  autorPerfilId Int       @map("autor_perfil_id")
+  conteudo      String
+  anexos        Json?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  thread        ChatThread @relation(fields: [threadId], references: [id])
+  autor         Perfil     @relation(fields: [autorPerfilId], references: [id])
+  
+  @@map("chat_mensagens")
+  @@index([threadId])
+  @@index([autorPerfilId])
 }
 
 model Contrato {

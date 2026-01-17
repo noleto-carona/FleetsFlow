@@ -29,7 +29,7 @@ const Sidebar: React.FC = () => {
     { icon: ShoppingCart, label: 'Marketplace', path: '/marketplace' },
     { icon: Anchor, label: 'Operações', path: '/operacoes' },
     { icon: Leaf, label: 'ESG', path: '/esg' },
-    { icon: LineChart, label: 'Predições', path: '/predicoes' }, // Assumindo "Pedrações" = Predições
+    { icon: LineChart, label: 'Relatórios', path: '/predicoes' },
     { icon: User, label: 'Perfil', path: '/perfil' },
   ];
 

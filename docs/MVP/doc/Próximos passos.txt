@@ -1,0 +1,67 @@
+Próximos passos sugeridos (numerados)
+
+1. Backend – Cadastro Empresa/Perfil (Onboarding mínimo)
+   
+   - Criar endpoints para:
+     - Criar empresa + perfil (dados básicos + aceite LGPD).
+     - Buscar dados da empresa logada.
+   - Já usando o schema.prisma atual ( Empresa , Perfil ).
+2. Backend – Compliance (Empresa / Embarcação / Tripulação)
+   
+   - Endpoints para:
+     - Listar documentos por empresa, embarcação e tripulante.
+     - Criar/atualizar status ( PENDENTE , VALIDADO , etc.).
+   - Usando Documento , ComplianceDocumento , Tripulante , TripulanteDocumento .
+3. Backend – Marketplace (Demanda Spot)
+   
+   - Endpoints para:
+     - Criar nova DemandaSpot .
+     - Listar demandas abertas para PMEs elegíveis.
+   - Usando DemandaSpot , Perfil , Embarcacao .
+4. Backend – Match + Aceite do Chamado
+   
+   - Endpoints para:
+     - PME aceitar uma demanda (criar Match ).
+     - Listar matches de uma PME.
+   - Respeitando regras de unicidade ( @@unique([demandaId, pmeId, embarcacaoId]) ).
+5. Backend – Chat Seguro de Negociação
+   
+   - Endpoints REST para:
+     - Abrir ChatThread a partir de um Match .
+     - Enviar/ler mensagens ( ChatMensagem ) por thread.
+   - Já usando os modelos novos.
+6. Backend – Contrato + Operação + Pagamento (fluxo básico)
+   
+   - Endpoints para:
+     - Gerar contrato a partir de um match (sem integração com assinatura ainda).
+     - Criar/atualizar Operacao ligada ao contrato.
+     - Registrar Pagamento em modo “simulado” (sem gateway).
+7. Frontend – Tela de Onboarding / Cadastro de Empresa
+   
+   - Tela com formulário para:
+     - Razão social, CNPJ, e-mail, responsável, aceite LGPD.
+   - Chama os endpoints do item 1.
+8. Frontend – Tela de Compliance
+   
+   - Tela para:
+     - Ver lista de documentos (empresa, embarcação, tripulação).
+     - Fazer upload básico (mesmo que ainda sem fila de processamento real).
+   - Conecta com o backend do item 2.
+9. Frontend – Tela de Marketplace / Demanda Spot
+   
+   - Tela para:
+     - Criar nova demanda (lado armador).
+     - Ver demandas disponíveis (lado PME) e acionar “Aceitar”.
+   - Conecta com backend dos itens 3 e 4.
+10. Frontend – Tela de Chat dentro da Operação
+    
+    - Componente de chat:
+      - Lista mensagens do ChatThread .
+      - Caixa de envio de nova mensagem.
+    - Conecta com backend do item 5.
+11. Infra / Modelo Futuro – Chave Operacional Histórica + Eventos de Operação
+    
+    - Ajustar schema.prisma para:
+      - Adicionar modelo ChaveOperacional (histórico).
+      - Adicionar modelo OperacaoEvento para logs estruturados (geofencing, alertas, etc.).
+    - Ainda sem endpoints, só o modelo.

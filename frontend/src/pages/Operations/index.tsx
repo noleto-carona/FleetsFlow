@@ -5,8 +5,6 @@ import MainLayout from '../../layouts/MainLayout';
 import { AlertTriangle, Activity, Navigation, Anchor, GripHorizontal, Volume2, VolumeX } from 'lucide-react';
 import oceanAmbience from '../../audio/indian-ocean-sound.mp3';
 
-const DEFAULT_VOLUME = 0.15;
-
 const OperationsPage: React.FC = () => {
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(0);
@@ -17,7 +15,7 @@ const OperationsPage: React.FC = () => {
 
   useEffect(() => {
     try {
-      const storedAlert = localStorage.getItem('ops_alert_position_v2');
+      const storedAlert = localStorage.getItem('ops_alert_position_v3');
       if (storedAlert) {
         const parsed = JSON.parse(storedAlert);
         if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
@@ -25,7 +23,7 @@ const OperationsPage: React.FC = () => {
         }
       }
 
-      const storedTelemetry = localStorage.getItem('ops_telemetry_position_v2');
+      const storedTelemetry = localStorage.getItem('ops_telemetry_position_v3');
       if (storedTelemetry) {
         const parsed = JSON.parse(storedTelemetry);
         if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
@@ -33,7 +31,7 @@ const OperationsPage: React.FC = () => {
         }
       }
 
-      const storedAudio = localStorage.getItem('ops_audio_position_v2');
+      const storedAudio = localStorage.getItem('ops_audio_position_v3');
       if (storedAudio) {
         const parsed = JSON.parse(storedAudio);
         if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
@@ -71,21 +69,25 @@ const OperationsPage: React.FC = () => {
         <div className="fixed inset-0 z-50 pointer-events-none">
           
           <Draggable
+            handle=".alert-banner-handle"
             position={alertPosition}
             onDrag={(_, data) => setAlertPosition({ x: data.x, y: data.y })}
             onStop={(_, data) => {
               const position = { x: data.x, y: data.y };
               setAlertPosition(position);
               try {
-                localStorage.setItem('ops_alert_position_v2', JSON.stringify(position));
+                localStorage.setItem('ops_alert_position_v3', JSON.stringify(position));
               } catch {
               }
             }}
           >
-            <div className="absolute top-6 left-1/2 w-auto max-w-2xl pointer-events-auto cursor-move" style={{ transform: 'translateX(-50%)' }}>
-              <div className="bg-red-500/20 backdrop-blur-md border border-red-500/50 text-red-100 px-6 py-3 rounded-full flex items-center gap-3 shadow-[0_0_20px_rgba(239,68,68,0.3)] animate-pulse">
+            <div className="alert-banner-container absolute top-[115px] left-[280px] w-auto max-w-2xl pointer-events-auto cursor-default" style={{ transform: 'translateX(-50%)' }}>
+              <div className="alert-banner-shell bg-red-500/20 backdrop-blur-md border border-red-500/50 text-red-100 px-6 py-3 rounded-full flex items-center gap-3 shadow-[0_0_20px_rgba(239,68,68,0.3)] animate-pulse">
+                <div className="alert-banner-handle flex items-center justify-center pr-2 text-red-300 cursor-grab active:cursor-grabbing">
+                  <GripHorizontal className="w-4 h-4 text-red-300" />
+                </div>
                 <AlertTriangle className="w-5 h-5 text-red-400" />
-                <span className="font-mono tracking-wide uppercase text-sm">
+                <span className="alert-banner-text font-mono tracking-wide uppercase text-sm">
                   ALERT: Vessel approaching restricted zone. ETA 25 min.
                 </span>
               </div>
@@ -100,12 +102,12 @@ const OperationsPage: React.FC = () => {
               const position = { x: data.x, y: data.y };
               setTelemetryPosition(position);
               try {
-                localStorage.setItem('ops_telemetry_position_v2', JSON.stringify(position));
+                localStorage.setItem('ops_telemetry_position_v3', JSON.stringify(position));
               } catch {
               }
             }}
           >
-            <div className="absolute right-4 top-24 w-64 pointer-events-auto cursor-move">
+            <div className="absolute right-[30px] top-[185px] w-64 pointer-events-auto cursor-move">
               <div className="bg-[#112240]/80 backdrop-blur-lg border border-[#64ffda] rounded-xl p-4 shadow-[0_0_30px_rgba(100,255,218,0.1)] relative overflow-hidden">
                 <div className="drag-handle absolute top-0 left-0 w-full h-6 flex items-center justify-center cursor-grab active:cursor-grabbing hover:bg-[#64ffda]/10 transition-colors z-20">
                   <GripHorizontal className="w-4 h-4 text-[#64ffda]/50" />
@@ -168,55 +170,54 @@ const OperationsPage: React.FC = () => {
             </div>
           </Draggable>
           <Draggable
+            handle=".audio-volume-handle"
             position={audioControlsPosition}
             onDrag={(_, data) => setAudioControlsPosition({ x: data.x, y: data.y })}
             onStop={(_, data) => {
               const position = { x: data.x, y: data.y };
               setAudioControlsPosition(position);
               try {
-                localStorage.setItem('ops_audio_position_v2', JSON.stringify(position));
+                localStorage.setItem('ops_audio_position_v3', JSON.stringify(position));
               } catch {
               }
             }}
           >
-            <div className="absolute top-4 right-6 pointer-events-auto flex items-center gap-3 cursor-move">
-              <button
-                type="button"
-                onClick={() => {
-                  if (isMuted || volume <= 0) {
-                    setIsMuted(false);
-                    setVolume(prev => (prev <= 0 ? DEFAULT_VOLUME : prev));
-                  } else {
-                    setIsMuted(true);
-                    setVolume(0);
-                  }
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#112240]/80 border border-[#64ffda]/50 text-[#ccd6f6] hover:bg-[#64ffda]/10 transition-colors text-[11px]"
-              >
-                {isMuted || volume <= 0 ? (
-                  <VolumeX className="w-4 h-4 text-[#64ffda]" />
-                ) : (
-                  <Volume2 className="w-4 h-4 text-[#64ffda]" />
-                )}
-                <span className="text-[10px] font-mono uppercase tracking-wide">
-                  {isMuted || volume <= 0 ? 'Mute ativo' : 'Som ativo'}
-                </span>
-              </button>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[9px] text-[#8892b0] font-mono uppercase">Vol</span>
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  value={volume}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    const newVolume = Number(event.target.value);
-                    setVolume(newVolume);
-                    setIsMuted(newVolume <= 0);
-                  }}
-                  className="w-20 h-1 cursor-pointer"
-                />
+            <div className="audio-volume-container absolute top-[125px] right-[30px] w-64 pointer-events-auto cursor-default">
+              <div className="audio-volume-shell w-full flex items-center gap-3 px-3 py-2 rounded-full bg-[#020617]/10 border border-[#64ffda]/40 shadow-[0_0_25px_rgba(100,255,218,0.25)]">
+                <div className="audio-volume-handle flex items-center justify-center pr-1 text-[#64ffda]/70 cursor-grab active:cursor-grabbing">
+                  <GripHorizontal className="w-3 h-3" />
+                </div>
+                <div className="audio-volume-status flex items-center gap-2">
+                  {isMuted || volume <= 0 ? (
+                    <VolumeX className="w-4 h-4 text-[#64ffda]" />
+                  ) : (
+                    <Volume2 className="w-4 h-4 text-[#64ffda]" />
+                  )}
+                  <span className="audio-volume-label text-[10px] font-mono uppercase tracking-wide text-[#64ffda]">
+                    {isMuted || volume <= 0 ? 'Mute' : `${Math.round(volume * 100)}%`}
+                  </span>
+                </div>
+                <div className="audio-volume-bar relative flex-1 h-3 cursor-default">
+                  <div className="audio-volume-bar-track absolute inset-0 rounded-full bg-[#020617]/10 border border-[#64ffda]/40 overflow-hidden">
+                    <div
+                      className="audio-volume-bar-fill h-full bg-gradient-to-r from-[#020617] via-[#0ea5e9] to-[#64ffda] shadow-[0_0_18px_rgba(34,211,238,0.8)]"
+                      style={{ width: `${Math.max(volume * 100, 0)}%` }}
+                    />
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    value={volume}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      const newVolume = Number(event.target.value);
+                      setVolume(newVolume);
+                      setIsMuted(newVolume <= 0);
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                </div>
               </div>
             </div>
           </Draggable>
