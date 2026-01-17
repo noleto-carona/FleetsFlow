@@ -43,9 +43,9 @@
   - Assim que o Docker Desktop estiver instalado e rodando, o fluxo recomendado será:
     1. `docker-compose up -d` na pasta `backend` para subir PostgreSQL e Redis.
     2. `npm run migrate:deploy` na pasta `backend` para aplicar as migrations do Prisma no banco.
- - **Atualização de documentação (status com tachado)**:
-   - Arquivo `docs/MVP/ajustes-prisma-narrativa-operacao.md` recebeu um checklist rápido com itens concluídos marcados com tachado (Tripulação, Documentos de Tripulação e Chat seguro já implementados no schema e migrados).
-   - Arquivo `docs/MVP/doc/OPERAÇÃO NARRADA SIMULADA.txt` ganhou um bloco final de “STATUS DE IMPLEMENTAÇÃO (MVP ATUAL)” com itens já suportados pelo modelo de dados marcados com tachado e itens futuros ainda em aberto sem tachado.
+- **Atualização de documentação (status com tachado)**:
+  - Arquivo `docs/MVP/ajustes-prisma-narrativa-operacao.md` recebeu um checklist rápido com itens concluídos marcados com tachado (Tripulação, Documentos de Tripulação e Chat seguro já implementados no schema e migrados).
+  - Arquivo `docs/MVP/doc/OPERAÇÃO NARRADA SIMULADA.txt` ganhou um bloco final de “STATUS DE IMPLEMENTAÇÃO (MVP ATUAL)” com itens já suportados pelo modelo de dados marcados com tachado e itens futuros ainda em aberto sem tachado.
 
 ### [2026-01-17] Backend NestJS inicial e Onboarding de Empresa
 - **Estrutura base do backend criada**:
@@ -82,7 +82,7 @@
 - **Build**:
   - `npm run build` no backend executado com sucesso após inclusão desses módulos e DTOs.
 
-### [2026-01-17] Backend - Marketplace (Demanda Spot)
+### [2026-01-17 19:30] Backend - Marketplace (Demanda Spot)
 - **Implementação do Item 3 (Backend)**:
   - Criado `DemandaSpotModule` (`backend/src/modules/demanda-spot`) com:
     - **Service**: 
@@ -95,3 +95,18 @@
   - Registrado `DemandaSpotModule` no `AppModule`.
 - **Documentação**:
   - Item 3 marcado como concluído (tachado) em `docs/MVP/doc/Próximos passos.txt`.
+
+### [2026-01-17 19:37] Backend - Match e Aceite
+- **Implementação do Item 4 (Backend)**:
+  - Criado `MatchModule` (`backend/src/modules/match`) com:
+    - **Service**: 
+      - `create`: Registra o aceite de uma demanda por uma PME/Embarcação, verificando unicidade (`demandaId` + `pmeId` + `embarcacaoId`).
+      - `findAllByPme`: Lista os matches de uma PME específica, trazendo dados da demanda e do contratante.
+    - **Controller**:
+      - `POST /api/matches`: Endpoint para criar match (aceite).
+      - `GET /api/matches/pme/:pmeId`: Endpoint para listar matches.
+    - **DTO**: `CreateMatchDto` valida `demandaId`, `pmeId`, `embarcacaoId` e opcionalmente `precoProposto`.
+  - Registrado `MatchModule` no `AppModule`.
+- **Documentação**:
+  - Item 4 marcado como concluído (tachado) em `docs/MVP/doc/Próximos passos.txt`.
+

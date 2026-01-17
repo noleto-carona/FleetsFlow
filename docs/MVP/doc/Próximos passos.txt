@@ -19,7 +19,7 @@ ________________________________________
      - Criar nova DemandaSpot .
      - Listar demandas abertas para PMEs elegíveis.
    - Usando DemandaSpot , Perfil , Embarcacao .
-4. Backend – Match + Aceite do Chamado
+~~4. Backend – Match + Aceite do Chamado~~
    
    - Endpoints para:
      - PME aceitar uma demanda (criar Match ).
