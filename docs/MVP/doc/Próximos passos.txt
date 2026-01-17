@@ -25,7 +25,7 @@ ________________________________________
      - PME aceitar uma demanda (criar Match ).
      - Listar matches de uma PME.
    - Respeitando regras de unicidade ( @@unique([demandaId, pmeId, embarcacaoId]) ).
-5. Backend – Chat Seguro de Negociação
+~~5. Backend – Chat Seguro de Negociação~~
    
    - Endpoints REST para:
      - Abrir ChatThread a partir de um Match .

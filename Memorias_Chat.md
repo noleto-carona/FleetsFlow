@@ -131,3 +131,22 @@
   - Registrado `ComplianceModule` no `AppModule`.
 - **Documentação**:
   - Item 2 marcado como concluído (tachado) em `docs/MVP/doc/Próximos passos.txt`.
+
+### [2026-01-17 20:15] Backend - Chat Seguro de Negociação
+- **Implementação do Item 5 (Backend)**:
+  - Criado `ChatModule` (`backend/src/modules/chat`) com:
+    - **Service**:
+      - `abrirThread`: cria ou retorna `ChatThread` única para um `matchId`, incluindo mensagens ordenadas por `createdAt`.
+      - `buscarThreadPorMatch`: busca thread de chat a partir de um `matchId`.
+      - `listarMensagens`: lista `ChatMensagem` de uma thread específica.
+      - `enviarMensagem`: cria nova `ChatMensagem` validando existência de `ChatThread` e `Perfil` autor.
+    - **Controller**:
+      - `POST /api/chat/threads`: abre thread para um match.
+      - `GET /api/chat/threads/match/:matchId`: busca thread (com mensagens) a partir do match.
+      - `GET /api/chat/threads/:threadId/mensagens`: lista mensagens de uma thread.
+      - `POST /api/chat/threads/:threadId/mensagens`: envia mensagem para uma thread.
+    - **DTOs**:
+      - `CreateChatThreadDto` e `CreateChatMensagemDto` para validar entrada.
+  - Registrado `ChatModule` no `AppModule`.
+- **Documentação**:
+  - Item 5 marcado como concluído (tachado) em `docs/MVP/doc/Próximos passos.txt`.
