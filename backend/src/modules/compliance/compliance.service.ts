@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { DocStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateDocumentoEmpresaDto } from './dto/create-documento-empresa.dto';
 import { CreateComplianceDocumentoDto } from './dto/create-compliance-documento.dto';
@@ -22,6 +23,11 @@ export class ComplianceService {
         perfis: {
           include: {
             complianceDocs: true,
+            embarcacoes: {
+              include: {
+                certificados: true,
+              },
+            },
           },
         },
       },
@@ -112,7 +118,8 @@ export class ComplianceService {
           ? new Date(dto.dataValidade)
           : doc.dataValidade,
         observacao: dto.observacao ?? doc.observacao,
-        validadoEm: dto.status ? new Date() : doc.validadoEm,
+        validadoEm:
+          dto.status === DocStatus.VALIDADO ? new Date() : doc.validadoEm,
       },
     });
   }
@@ -134,9 +141,9 @@ export class ComplianceService {
           ? new Date(dto.dataValidade)
           : doc.dataValidade,
         observacao: dto.observacao ?? doc.observacao,
-        validadoEm: dto.status ? new Date() : doc.validadoEm,
+        validadoEm:
+          dto.status === DocStatus.VALIDADO ? new Date() : doc.validadoEm,
       },
     });
   }
 }
-
