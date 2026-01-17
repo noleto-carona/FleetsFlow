@@ -7,7 +7,7 @@ Próximos passos sugeridos (numerados)
      - Buscar dados da empresa logada.
    - Já usando o schema.prisma atual ( Empresa , Perfil ).
 ________________________________________
-2. Backend – Compliance (Empresa / Embarcação / Tripulação)
+~~2. Backend – Compliance (Empresa / Embarcação / Tripulação)~~
    
    - Endpoints para:
      - Listar documentos por empresa, embarcação e tripulante.

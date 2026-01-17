@@ -110,3 +110,24 @@
 - **Documentação**:
   - Item 4 marcado como concluído (tachado) em `docs/MVP/doc/Próximos passos.txt`.
 
+### [2026-01-17 19:49] Backend - Compliance (Empresa / Embarcação / Tripulação)
+- **Implementação do Item 2 (Backend)**:
+  - Criado `ComplianceModule` (`backend/src/modules/compliance`) com:
+    - **Service**:
+      - `listarPorEmpresa`: retorna Empresa já incluindo `documentos`, `tripulantes` (com `documentos`) e `perfis` (com `complianceDocs`).
+      - `criarDocumentoEmpresa`: cria registros em `Documento` vinculados à empresa.
+      - `criarComplianceDocumento`: cria registros em `ComplianceDocumento` vinculados a um perfil.
+      - `criarTripulanteDocumento`: cria registros em `TripulanteDocumento` vinculados a um tripulante.
+      - `atualizarStatusComplianceDocumento` e `atualizarStatusTripulanteDocumento`: atualizam `status`, `dataValidade`, `observacao` e `validadoEm`.
+    - **Controller**:
+      - `GET /api/compliance/empresa/:empresaId`: lista documentos de empresa, perfis e tripulantes associados.
+      - `POST /api/compliance/documentos/empresa`: cria `Documento` para empresa.
+      - `POST /api/compliance/documentos/perfil`: cria `ComplianceDocumento`.
+      - `POST /api/compliance/documentos/tripulante`: cria `TripulanteDocumento`.
+      - `PATCH /api/compliance/documentos/compliance/:id/status`: atualiza status de `ComplianceDocumento`.
+      - `PATCH /api/compliance/documentos/tripulante/:id/status`: atualiza status de `TripulanteDocumento`.
+    - **DTOs**:
+      - `CreateDocumentoEmpresaDto`, `CreateComplianceDocumentoDto`, `CreateTripulanteDocumentoDto` e `UpdateDocStatusDto` usando `DocStatus` do Prisma.
+  - Registrado `ComplianceModule` no `AppModule`.
+- **Documentação**:
+  - Item 2 marcado como concluído (tachado) em `docs/MVP/doc/Próximos passos.txt`.
