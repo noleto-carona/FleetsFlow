@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Completo: Tailwind CSS + Semântica</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos para o guia */
+        :root {
+            --primary: #3b82f6;
+            --secondary: #10b981;
+            --accent: #8b5cf6;
+            --dark: #1f2937;
+            --light: #f9fafb;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Navegação */
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 40;
+        }
+        
+        .nav-sidebar h3 {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 10px 15px;
+            margin: 5px 0;
+            color: #4b5563;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background-color: #f3f4f6;
+            color: var(--primary);
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Conteúdo principal */
+        .main-content {
+            margin-left: 300px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+        
+        section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        h1 {
+            color: #111827;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        h2 {
+            color: #1f2937;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        h3 {
+            color: #374151;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 20px 0 10px;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            font-size: 1.125rem;
+            margin-bottom: 40px;
+        }
+        
+        /* Componentes de exemplo */
+        .example-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 1024px) {
+            .example-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .example-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .example-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bad-example {
+            border-color: #f87171;
+        }
+        
+        .good-example {
+            border-color: #10b981;
+        }
+        
+        .example-label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .bad-label {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .good-label {
+            background-color: #d1fae5;
+            color: #059669;
+        }
+        
+        .code-block {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #374151;
+        }
+        
+        .code-comment {
+            color: #9ca3af;
+        }
+        
+        .code-string {
+            color: #34d399;
+        }
+        
+        .code-class {
+            color: #60a5fa;
+        }
+        
+        .code-prop {
+            color: #fbbf24;
+        }
+        
+        /* Componentes interativos */
+        .interactive-demo {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 2px dashed #0ea5e9;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .demo-component {
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        
+        .step {
+            background: #f8fafc;
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        
+        /* Alertas e dicas */
+        .tip {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Tabela de comparação */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .comparison-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* Componentes visuais */
+        .visual-component {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        /* Toggle para modo mobile */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .nav-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .nav-sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            section {
+                padding: 20px;
+            }
+        }
+        
+        /* Checkbox de progresso */
+        .progress-checkbox {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        
+        .progress-checkbox input {
+            margin-right: 10px;
+        }
+        
+        .progress-checkbox.checked label {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toggle Mobile -->
+    <button id="mobileToggle" class="mobile-toggle">☰ Menu</button>
+    
+    <!-- Sidebar de Navegação -->
+    <nav class="nav-sidebar" id="sidebar">
+        <h3>📚 Guia Completo</h3>
+        <div id="navLinks"></div>
+        
+        <div class="tip" style="margin-top: 40px;">
+            <h4 style="margin-top: 0;">✅ Progresso do Aprendizado</h4>
+            <div id="progressChecklist"></div>
+        </div>
+    </nav>
+    
+    <!-- Conteúdo Principal -->
+    <main class="main-content" id="mainContent">
+        <!-- Cabeçalho -->
+        <header>
+            <h1>Tailwind CSS + Semântica</h1>
+            <p class="subtitle">Guia Definitivo: Combine a produtividade do Tailwind com a organização semântica</p>
+            
+            <div class="visual-component">
+                <h2 style="color: white; margin-top: 0;">🚀 A Abordagem Híbrida</h2>
+                <p style="font-size: 1.125rem; opacity: 0.9;">
+                    Produtividade do Tailwind + Organização Semântica = Código Mantenível
+                </p>
+            </div>
+        </header>
+        
+        <!-- Seção 1: Introdução -->
+        <section id="intro">
+            <h2>🎯 1. Por que Esta Abordagem?</h2>
+            <p>O Tailwind CSS é excelente para produtividade, mas pode deixar o HTML verboso e pouco semântico. A abordagem híbrida resolve isso:</p>
+            
+            <div class="example-container">
+                <div class="example-card bad-example">
+                    <span class="example-label bad-label">❌ Problema</span>
+                    <h3>Apenas Tailwind (HTML Poluído)</h3>
+                    <div class="code-block">
+                        <span class="code-comment">&lt;!-- Difícil de entender, testar e manter --&gt;</span><br>
+                        <span class="code-prop">&lt;div</span> <span class="code-class">class=</span><span class="code-string">"w-full max-w-md mx-auto p-6 bg-white rounded-xl shadow-md"</span><span class="code-prop">&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-prop">&lt;div</span> <span class="code-class">class=</span><span class="code-string">"flex items-center space-x-4"</span><span class="code-prop">&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-prop">&lt;div</span> <span class="code-class">class=</span><span class="code-string">"flex-shrink-0"</span><span class="code-prop">&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">&lt;!-- ... --&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-prop">&lt;/div&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-prop">&lt;/div&gt;</span><br>
+                        <span class="code-prop">&lt;/div&gt;</span>
+                    </div>
+                    <div class="warning">
+                        <strong>Problemas:</strong> Sem significado semântico, difícil selecionar em JS/testes, mistura estrutura com apresentação.
+                    </div>
+                </div>
+                
+                <div class="example-card good-example">
+                    <span class="example-label good-label">✅ Solução</span>
+                    <h3>Tailwind + Semântica (Híbrido)</h3>
+                    <div class="code-block">
+                        <span class="code-comment">&lt;!-- Claro, testável e mantenível --&gt;</span><br>
+                        <span class="code-prop">&lt;div</span> <span class="code-class">class=</span><span class="code-string">"card-container w-full max-w-md mx-auto p-6 bg-white rounded-xl shadow-md"</span><span class="code-prop">&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-prop">&lt;div</span> <span class="code-class">class=</span><span class="code-string">"card-content flex items-center space-x-4"</span><span class="code-prop">&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-prop">&lt;div</span> <span class="code-class">class=</span><span class="code-string">"card-avatar flex-shrink-0"</span><span class="code-prop">&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">&lt;!-- ... --&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-prop">&lt;/div&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-prop">&lt;/div&gt;</span><br>
+                        <span class="code-prop">&lt;/div&gt;</span>
+                    </div>
+                    <div class="success">
+                        <strong>Vantagens:</strong> Significado claro, fácil seleção, separação lógica, melhor manutenção.
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Seção 2: Princípios Fundamentais -->
+        <section id="principles">
+            <h2>🔑 2. Princípios da Abordagem Híbrida</h2>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Semântica Primeiro:</strong> Classes semânticas identificam O QUE o elemento é.
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Tailwind Depois:</strong> Classes utilitárias definem COMO o elemento aparece.
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Ordem Estruturada:</strong> Sempre: [semântica] → [tailwind] → [condicionais].
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Nomenclatura Clara:</strong> Use: [componente]-[elemento]--[estado].
+            </div>
+            
+            <div class="interactive-demo">
+                <h3>🎮 Demonstração Interativa</h3>
+                <div class="demo-component">
+                    <!-- Componente de exemplo -->
+                    <div id="demoComponent" class="user-card max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
+                        <div class="user-card-header bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
+                            <div class="user-card-title text-white text-xl font-bold">João Silva</div>
+                            <div class="user-card-subtitle text-blue-100 text-sm">Desenvolvedor Front-end</div>
+                        </div>
+                        <div class="user-card-body px-6 py-4">
+                            <p class="user-card-text text-gray-700 text-base">
+                                Este card usa a abordagem híbrida. As classes começam com semântica ("user-card") seguida por Tailwind.
+                            </p>
+                        </div>
+                        <div class="user-card-footer bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                            <button class="btn-secondary user-card-btn user-card-btn--secondary px-4 py-2 rounded">
+                                Seguir
+                            </button>
+                            <button class="btn-primary user-card-btn user-card-btn--primary px-4 py-2 rounded">
+                                Mensagem
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="toggleDemoClasses()" class="btn-primary">
+                            Mostrar/Esconder Classes
+                        </button>
+                    </div>
+                    
+                    <div id="demoClasses" class="code-block" style="display: none; margin-top: 20px;">
+                        <span class="code-comment">// Estrutura de classes (semântica + tailwind):</span><br>
+                        user-card max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg<br>
+                        user-card-header bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4<br>
+                        user-card-title text-white text-xl font-bold<br>
+                        user-card-btn--primary px-4 py-2 rounded<br>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Seção 3: Padrões de Nomenclatura -->
+        <section id="naming">
+            <h2>🏷️ 3. Padrões de Nomenclatura</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Elemento</th>
+                        <th>Padrão</th>
+                        <th>Exemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Componente Principal</strong></td>
+                        <td><code>[componente]</code></td>
+                        <td><code>user-profile</code>, <code>product-card</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Elemento Filho</strong></td>
+                        <td><code>[componente]-[elemento]</code></td>
+                        <td><code>user-profile-avatar</code>, <code>product-card-image</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Estado/Modificador</strong></td>
+                        <td><code>[componente]--[estado]</code></td>
+                        <td><code>button--disabled</code>, <code>card--selected</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Elemento com Estado</strong></td>
+                        <td><code>[componente]-[elemento]--[estado]</code></td>
+                        <td><code>nav-item--active</code>, <code>form-input--error</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="tip">
+                <strong>💡 Dica:</strong> Use <code>BEM (Block, Element, Modifier)</code> como inspiração, mas adaptado para o ecossistema Tailwind/React.
+            </div>
+            
+            <h3>Exemplo Completo:</h3>
+            <div class="code-block">
+                <span class="code-comment">// Componente de Formulário</span><br>
+                &lt;form class="<span class="code-string">login-form max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md</span>"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="<span class="code-string">login-form-field mb-4</span>"&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;label class="<span class="code-string">login-form-label block text-gray-700 text-sm font-bold mb-2</span>"&gt;Email&lt;/label&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;input type="email" class="<span class="code-string">login-form-input w-full px-3 py-2 border rounded</span>"&gt;<br>
+                &nbsp;&nbsp;&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;button class="<span class="code-string">login-form-btn login-form-btn--submit w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600</span>"&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Entrar<br>
+                &nbsp;&nbsp;&lt;/button&gt;<br>
+                &lt;/form&gt;
+            </div>
+        </section>
+        
+        <!-- Seção 4: Implementação Prática -->
+        <section id="implementation">
+            <h2>💻 4. Como Implementar Passo a Passo</h2>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Analise o componente:</strong> O que este elemento representa?
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Dê um nome semântico:</strong> Baseado na função, não na aparência.
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Adicione classes Tailwind:</strong> Para estilização visual.
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Use template strings:</strong> Para organizar múltiplas classes.
+            </div>
+            
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>Adicione CSS extra se necessário:</strong> Para animações complexas ou pseudo-elementos.
+            </div>
+            
+            <h3>Exemplo com React/JSX:</h3>
+            <div class="code-block">
+                <span class="code-comment">// Componente React com abordagem híbrida</span><br>
+                <span class="code-class">const</span> <span class="code-prop">Notification</span> = ({ type, message }) =&gt; {<br>
+                &nbsp;&nbsp;<span class="code-class">const</span> baseClasses = `<span class="code-string">notification p-4 rounded-lg border</span>`;<br>
+                &nbsp;&nbsp;<span class="code-class">const</span> typeClasses = {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;success: `<span class="code-string">notification--success bg-green-50 border-green-200 text-green-800</span>`,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;error: `<span class="code-string">notification--error bg-red-50 border-red-200 text-red-800</span>`,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;warning: `<span class="code-string">notification--warning bg-yellow-50 border-yellow-200 text-yellow-800</span>`<br>
+                &nbsp;&nbsp;};<br>
+                <br>
+                &nbsp;&nbsp;<span class="code-class">return</span> (<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;div className={`<span class="code-string">${baseClasses} ${typeClasses[type]}</span>`}&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div className="<span class="code-string">notification-content flex items-center</span>"&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{message}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;<br>
+                &nbsp;&nbsp;);<br>
+                };
+            </div>
+        </section>
+        
+        <!-- Seção 5: Casos de Uso Específicos -->
+        <section id="use-cases">
+            <h2>🎯 5. Quando Usar Cada Abordagem</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Situação</th>
+                        <th>Recomendação</th>
+                        <th>Exemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Componentes Reutilizáveis</strong></td>
+                        <td>✅ Semântica + Tailwind</td>
+                        <td>Buttons, Cards, Modals</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Layout/Container</strong></td>
+                        <td>⚠️ Tailwind (se simples)</td>
+                        <td><code>flex justify-between</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Estados Dinâmicos</strong></td>
+                        <td>✅ Semântica (BEM-like)</td>
+                        <td><code>button--loading</code>, <code>input--invalid</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Animações Complexas</strong></td>
+                        <td>✅ CSS separado + semântica</td>
+                        <td>Keyframes, transformações</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Seleção em JS/Testes</strong></td>
+                        <td>✅ Semântica obrigatória</td>
+                        <td><code>data-testid</code> ou classes</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="warning">
+                <strong>⚠️ Atenção:</strong> Evite criar classes semânticas para tudo. Use bom senso: se é apenas estilo visual (cor, padding, margin), Tailwind puro pode ser suficiente.
+            </div>
+        </section>
+        
+        <!-- Seção 6: Prompt para AI (Trae/ChatGPT) -->
+        <section id="ai-prompt">
+            <h2>🤖 6. Prompt para IA (Trae/ChatGPT)</h2>
+            
+            <div class="code-block" style="background: linear-gradient(135deg, #1a2a3a, #2d3748);">
+                <span class="code-comment">// Copie e cole este prompt quando pedir componentes:</span><br><br>
+                
+                <span class="code-string">"Ao criar componentes com Tailwind CSS, use esta abordagem híbrida:</span><br><br>
+                
+                <span class="code-string">1. Comece com classes semânticas para identificar o elemento</span><br>
+                <span class="code-string">2. Adicione classes do Tailwind para estilização visual</span><br>
+                <span class="code-string">3. Use nomes no padrão: [componente]-[elemento]--[estado]</span><br>
+                <span class="code-string">4. Mantenha a ordem: semântica → tailwind → condicionais</span><br>
+                <span class="code-string">5. Use template strings para organizar múltiplas classes</span><br><br>
+                
+                <span class="code-string">Exemplo do que quero:</span><br>
+                <span class="code-string">&lt;div className="search-input-container relative w-full max-w-md"&gt;</span><br>
+                <span class="code-string">&nbsp;&nbsp;&lt;input </span><br>
+                <span class="code-string">&nbsp;&nbsp;&nbsp;&nbsp;className="search-input-field w-full px-4 py-2 rounded-lg border border-gray-300"</span><br>
+                <span class="code-string">&nbsp;&nbsp;&nbsp;&nbsp;type="text"</span><br>
+                <span class="code-string">&nbsp;&nbsp;/&gt;</span><br>
+                <span class="code-string">&nbsp;&nbsp;&lt;button className="search-input-button absolute right-2 top-2 p-1"&gt;</span><br>
+                <span class="code-string">&nbsp;&nbsp;&nbsp;&nbsp;🔍</span><br>
+                <span class="code-string">&nbsp;&nbsp;&lt;/button&gt;</span><br>
+                <span class="code-string">&lt;/div&gt;"</span>
+            </div>
+            
+            <div class="success">
+                <strong>💡 Dica para IA:</strong> Sempre me pergunte se prefiro Tailwind puro ou a abordagem híbrida para cada componente específico.
+            </div>
+        </section>
+        
+        <!-- Seção 7: Checklist de Implementação -->
+        <section id="checklist">
+            <h2>✅ 7. Checklist de Implementação</h2>
+            
+            <div id="implementationChecklist">
+                <!-- Será preenchido por JavaScript -->
+            </div>
+            
+            <div class="tip">
+                <strong>🎯 Meta:</strong> Complete todos os itens antes de considerar que dominou a abordagem.
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer>
+            <p>📚 <strong>Guia Completo Tailwind + Semântica</strong></p>
+            <p>Criado para desenvolvedores que querem o melhor dos dois mundos: produtividade + organização</p>
+            <p style="margin-top: 15px; font-size: 0.875rem; opacity: 0.8;">
+                Use este guia como referência sempre que criar componentes. Salve o link ou faça download da página.
+            </p>
+        </footer>
+    </main>
+
+    <script>
+        // Conteúdo da navegação
+        const sections = [
+            { id: 'intro', title: '🎯 Por que Esta Abordagem?' },
+            { id: 'principles', title: '🔑 Princípios Fundamentais' },
+            { id: 'naming', title: '🏷️ Padrões de Nomenclatura' },
+            { id: 'implementation', title: '💻 Implementação Prática' },
+            { id: 'use-cases', title: '🎯 Casos de Uso Específicos' },
+            { id: 'ai-prompt', title: '🤖 Prompt para IA' },
+            { id: 'checklist', title: '✅ Checklist' }
+        ];
+        
+        // Checklist de progresso
+        const progressItems = [
+            'Entendi a diferença entre Tailwind puro e híbrido',
+            'Compreendi a ordem: semântica → tailwind → condicionais',
+            'Aprendi os padrões de nomenclatura',
+            'Vi exemplos práticos de implementação',
+            'Sei quando usar cada abordagem',
+            'Tenho o prompt pronto para IA'
+        ];
+        
+        // Checklist de implementação
+        const implementationChecklist = [
+            'Analisar a função do componente antes de nomear',
+            'Usar nomes semânticos baseados na função',
+            'Manter a ordem correta das classes',
+            'Usar template strings para múltiplas classes',
+            'Adicionar estados com padrão --[estado]',
+            'Considerar CSS extra para animações complexas',
+            'Testar seleção por classes semânticas'
+        ];
+        
+        // Inicializar navegação
+        function initNavigation() {
+            const navContainer = document.getElementById('navLinks');
+            const progressContainer = document.getElementById('progressChecklist');
+            const checklistContainer = document.getElementById('implementationChecklist');
+            
+            // Criar links de navegação
+            sections.forEach((section, index) => {
+                const link = document.createElement('a');
+                link.href = `#${section.id}`;
+                link.className = 'nav-link';
+                link.textContent = `${index + 1}. ${section.title}`;
+                link.onclick = (e) => {
+                    // Atualizar link ativo
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Fechar menu mobile se aberto
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('sidebar').classList.remove('active');
+                    }
+                };
+                navContainer.appendChild(link);
+            });
+            
+            // Criar checklist de progresso
+            progressItems.forEach((item, index) => {
+                const container = document.createElement('div');
+                container.className = 'progress-checkbox';
+                container.innerHTML = `
+                    <input type="checkbox" id="progress${index}" onchange="updateProgress()">
+                    <label for="progress${index}">${item}</label>
+                `;
+                progressContainer.appendChild(container);
+            });
+            
+            // Criar checklist de implementação
+            implementationChecklist.forEach((item, index) => {
+                const container = document.createElement('div');
+                container.className = 'progress-checkbox';
+                container.innerHTML = `
+                    <input type="checkbox" id="impl${index}">
+                    <label for="impl${index}">${item}</label>
+                `;
+                checklistContainer.appendChild(container);
+            });
+            
+            // Ativar primeiro link
+            document.querySelector('.nav-link').classList.add('active');
+        }
+        
+        // Atualizar progresso
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('#progressChecklist input[type="checkbox"]');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const total = checkboxes.length;
+            const percentage = Math.round((checked / total) * 100);
+            
+            // Atualizar título da seção de progresso
+            const progressTitle = document.querySelector('#progressChecklist').previousElementSibling;
+            if (progressTitle && progressTitle.tagName === 'H4') {
+                progressTitle.innerHTML = `✅ Progresso do Aprendizado (${percentage}%)`;
+            }
+        }
+        
+        // Toggle para mobile
+        document.getElementById('mobileToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+        
+        // Fechar menu mobile ao clicar fora
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('mobileToggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                e.target !== toggle && 
+                !toggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+        
+        // Demo interativa
+        function toggleDemoClasses() {
+            const demoClasses = document.getElementById('demoClasses');
+            demoClasses.style.display = demoClasses.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        // Observador de seções para highlight da navegação
+        function initSectionObserver() {
+            const options = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.3
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, options);
+            
+            // Observar todas as seções
+            sections.forEach(section => {
+                const element = document.getElementById(section.id);
+                if (element) observer.observe(element);
+            });
+        }
+        
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavigation();
+            initSectionObserver();
+            
+            // Adicionar smooth scroll
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+        
+        // Adicionar estilo para scroll suave
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>
