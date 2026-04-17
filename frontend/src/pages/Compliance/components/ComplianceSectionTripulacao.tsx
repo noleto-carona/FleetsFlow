@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, FileText, CheckCircle, AlertCircle, Search, User } from 'lucide-react';
+import { FileText, CheckCircle, AlertCircle, Search, User } from 'lucide-react';
 import { DocStatus, DocTipo } from '../../../types';
 
 const mockTripulantes = [
